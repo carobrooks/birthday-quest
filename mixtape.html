@@ -126,6 +126,15 @@
     100% { transform: translateY(-120vh); opacity: 0; }
   }
 
+  .vinyl-wrap.dropping {
+    animation: exitDown 0.6s ease-in forwards;
+  }
+
+  @keyframes exitDown {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(120vh); opacity: 0; }
+  }
+
   .vinyl-canvas {
     width: 100%;
     height: 100%;
@@ -507,10 +516,25 @@
   let isTransitioning = false;
 
   // ===== AUDIO =====
+  // Pre-unlock audio on first user tap (mobile Safari requirement)
+  let audioUnlocked = false;
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    audioEl.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+    audioEl.play().then(() => { audioEl.pause(); audioUnlocked = true; }).catch(() => {});
+  }
+
   function startAudio(src) {
     if (!src) return;
     audioEl.src = src;
-    audioEl.play().catch(() => {});
+    audioEl.play().catch(() => {
+      // If autoplay fails, show tap hint so user taps to play
+      vinylInner.classList.add('spinning', 'paused');
+      pauseIcon.textContent = '▶';
+      pauseIcon.classList.add('visible');
+      isPlaying = false;
+      return;
+    });
     isPlaying = true;
     vinylInner.classList.add('spinning');
     vinylInner.classList.remove('paused');
@@ -605,7 +629,7 @@
     spotifyOverlay.classList.remove('visible');
 
     // Exit upward
-    vinylWrap.classList.remove('rising');
+    vinylWrap.classList.remove('rising', 'dropping');
     vinylWrap.classList.add('exiting');
 
     const nextIdx = state.current + 1;
@@ -616,6 +640,24 @@
       } else {
         showTrack(nextIdx);
       }
+    }, 700);
+  }
+
+  function goBack() {
+    if (isTransitioning) return;
+    if (state.current <= 0) return;
+    isTransitioning = true;
+
+    stopAudio();
+    swipeHint.classList.remove('visible');
+    spotifyOverlay.classList.remove('visible');
+
+    // Exit downward (reverse direction)
+    vinylWrap.classList.remove('rising', 'exiting');
+    vinylWrap.classList.add('dropping');
+
+    setTimeout(() => {
+      showTrack(state.current - 1);
     }, 700);
   }
 
@@ -658,9 +700,15 @@
     const dy = touchStartY - e.changedTouches[0].clientY;
     const dt = Date.now() - touchStartTime;
 
-    // Swipe up: distance > 60px, time < 500ms
-    if (dy > 60 && dt < 500) {
+    if (dt > 500) return; // too slow, not a swipe
+
+    // Swipe up: advance
+    if (dy > 60) {
       advanceTrack();
+    }
+    // Swipe down: go back
+    if (dy < -60) {
+      goBack();
     }
   }, { passive: true });
 
@@ -676,10 +724,12 @@
   document.addEventListener('keydown', (e) => {
     if (e.key === ' ') { e.preventDefault(); togglePlayPause(); }
     if (e.key === 'ArrowUp') { e.preventDefault(); advanceTrack(); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); goBack(); }
   });
 
   // ===== START =====
   $('startBtn').addEventListener('click', () => {
+    unlockAudio();
     $('title').classList.add('hidden');
     setTimeout(() => {
       $('title').style.display = 'none';
