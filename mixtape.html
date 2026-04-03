@@ -135,6 +135,17 @@
     100% { transform: translateY(120vh); opacity: 0; }
   }
 
+  .vinyl-wrap.descending {
+    animation: descendIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes descendIn {
+    0% { transform: translateY(-120vh) rotate(-15deg); opacity: 0; }
+    60% { transform: translateY(8px) rotate(2deg); opacity: 1; }
+    80% { transform: translateY(-4px) rotate(-1deg); }
+    100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  }
+
   .vinyl-canvas {
     width: 100%;
     height: 100%;
@@ -514,6 +525,7 @@
 
   let isPlaying = false;
   let isTransitioning = false;
+  let goingBack = false;
 
   // ===== AUDIO =====
   // Pre-unlock audio on first user tap (mobile Safari requirement)
@@ -594,10 +606,11 @@
 
     drawVinyl(vinylCanvas, t);
 
-    // Rise from bottom
-    vinylWrap.classList.remove('rising', 'exiting');
+    // Animate in: rise from bottom (forward) or descend from top (back)
+    vinylWrap.classList.remove('rising', 'exiting', 'dropping', 'descending');
     void vinylWrap.offsetWidth;
-    vinylWrap.classList.add('rising');
+    vinylWrap.classList.add(goingBack ? 'descending' : 'rising');
+    goingBack = false;
 
     setTimeout(() => {
       isTransitioning = false;
@@ -650,13 +663,14 @@
     if (isTransitioning) return;
     if (state.current <= 0) return;
     isTransitioning = true;
+    goingBack = true;
 
     stopAudio();
     swipeHint.classList.remove('visible');
     spotifyOverlay.classList.remove('visible');
 
     // Exit downward (reverse direction)
-    vinylWrap.classList.remove('rising', 'exiting');
+    vinylWrap.classList.remove('rising', 'exiting', 'descending');
     vinylWrap.classList.add('dropping');
 
     setTimeout(() => {
