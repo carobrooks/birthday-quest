@@ -361,15 +361,12 @@
 
 <div id="victory">
   <div class="v-title">Happy birthday, my sweet.</div>
-  <div style="font-size: 36px; margin-bottom: 16px;">♥</div>
   <div class="v-msg">
-    Happy birthday, <em>Neil</em>.<br><br>
     You are loved more than<br>
     all the notes in all the<br>
     songs ever written.<br><br>
     Thank you for being<br>
-    my favorite sound.<br><br>
-    ♥
+    my favorite sound.
   </div>
 </div>
 
@@ -798,6 +795,11 @@
     $('main').classList.add('active');
     $('resetBtn').style.display = 'block';
     showTrack(state.current);
+  }
+
+  // Confetti on title screen
+  if ($('title').style.display !== 'none') {
+    setTimeout(launchConfetti, 300);
   }
 
   window.addEventListener('beforeunload', save);
