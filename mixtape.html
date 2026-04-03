@@ -13,8 +13,8 @@
     --bg: #0a0a0f;
     --accent: #ff6b35;
     --accent2: #ff3864;
-    --text: #f0ece2;
-    --muted: #6b6b8d;
+    --text: #f5f3ed;
+    --muted: #9a9ab8;
   }
 
   body {
@@ -46,13 +46,13 @@
   #title.hidden { opacity: 0; pointer-events: none; }
 
   .t-msg {
-    font-size: 15px;
-    color: var(--muted);
+    font-size: 17px;
+    color: var(--text);
     text-align: center;
     line-height: 2.2;
     font-weight: 300;
     margin-bottom: 40px;
-    max-width: 280px;
+    max-width: 300px;
   }
 
   .btn-note {
@@ -85,8 +85,8 @@
 
   .track-label {
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
+    font-size: 11px;
+    color: var(--text);
     letter-spacing: 3px;
     text-transform: uppercase;
     position: absolute;
@@ -98,10 +98,10 @@
 
   /* ===== VINYL ===== */
   .vinyl-wrap {
-    width: 88vw;
-    height: 88vw;
-    max-width: 400px;
-    max-height: 400px;
+    width: 92vw;
+    height: 92vw;
+    max-width: 420px;
+    max-height: 420px;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
@@ -206,8 +206,8 @@
 
   .swipe-hint {
     font-family: 'Space Mono', monospace;
-    font-size: 9px;
-    color: var(--muted);
+    font-size: 11px;
+    color: var(--text);
     letter-spacing: 2px;
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -385,35 +385,35 @@
 
   // ===== TRACK DATA =====
   const TRACKS = [
-    { num: 'Track 1', emoji: '☕', type: 'black',
+    { num: 'Track 1', emoji: '◉', type: 'black',
       grooveColor1: '#2a1a0a', grooveColor2: '#3d2810',
       labelGrad: ['#8B6914','#D4A843'],
       src: 'track1.mp3', hint: 'swipe up after coffee' },
-    { num: 'Track 2', emoji: '🏠', type: 'black',
+    { num: 'Track 2', emoji: '◈', type: 'black',
       grooveColor1: '#2a1020', grooveColor2: '#3d1830',
       labelGrad: ['#E8725A','#F5B041'],
       src: 'track2.mp3', hint: 'swipe up after the tour' },
-    { num: 'Track 3', emoji: '🦕', type: 'black',
+    { num: 'Track 3', emoji: '⁂', type: 'black',
       grooveColor1: '#0a0a2a', grooveColor2: '#15103d',
       labelGrad: ['#2C3E50','#4A148C'],
       src: 'track3.mp3', hint: 'swipe up after our visit' },
-    { num: 'Track 4', emoji: '🪓', type: 'black',
+    { num: 'Track 4', emoji: '✦', type: 'black',
       grooveColor1: '#1a0f05', grooveColor2: '#2d1a0a',
       labelGrad: ['#8B4513','#CD853F'],
       src: 'track4.mp3', hint: 'swipe up after our meal' },
-    { num: 'Track 5', emoji: '🎵', type: 'black',
+    { num: 'Track 5', emoji: '♪', type: 'black',
       grooveColor1: '#1a0520', grooveColor2: '#2d0a35',
       labelGrad: ['#E91E63','#9C27B0'],
       src: 'track5.mp3', hint: 'swipe up after the show' },
-    { num: 'Track 6', emoji: '🌙', type: 'gold',
+    { num: 'Track 6', emoji: '☽', type: 'gold',
       grooveColor1: '#2a2008', grooveColor2: '#3d3010',
       labelGrad: ['#1a237e','#4a148c'],
       src: 'track6.mp3', hint: 'swipe up tomorrow' },
-    { num: 'Track 7', emoji: '🎶', type: 'platinum',
+    { num: 'Track 7', emoji: '♫', type: 'platinum',
       grooveColor1: '#1a1a20', grooveColor2: '#2a2a35',
       labelGrad: ['#888','#ccc'],
       src: 'nothing-rhymes-with-avi.mp3', hint: 'swipe up when you\'re ready' },
-    { num: 'Track 8', emoji: '✈️', type: 'holographic',
+    { num: 'Track 8', emoji: '∞', type: 'holographic',
       grooveColor1: '#1a1020', grooveColor2: '#201530',
       labelGrad: ['#FFD700','#FF6B35','#FF3864','#7B68EE'],
       src: '',
@@ -661,7 +661,18 @@
 
   function goBack() {
     if (isTransitioning) return;
-    if (state.current <= 0) return;
+    // On first track, swipe down goes back to title screen
+    if (state.current <= 0) {
+      stopAudio();
+      $('main').classList.remove('active');
+      $('resetBtn').style.display = 'none';
+      const titleEl = $('title');
+      titleEl.style.display = 'flex';
+      titleEl.classList.remove('hidden');
+      state = defaults();
+      save();
+      return;
+    }
     isTransitioning = true;
     goingBack = true;
 
