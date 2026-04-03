@@ -377,36 +377,36 @@
     { num: 'Track 1', emoji: '☕', type: 'black',
       grooveColor1: '#2a1a0a', grooveColor2: '#3d2810',
       labelGrad: ['#8B6914','#D4A843'],
-      src: 'track1.mp3' },
+      src: 'track1.mp3', hint: 'swipe up after coffee' },
     { num: 'Track 2', emoji: '🏠', type: 'black',
       grooveColor1: '#2a1020', grooveColor2: '#3d1830',
       labelGrad: ['#E8725A','#F5B041'],
-      src: 'track2.mp3' },
+      src: 'track2.mp3', hint: 'swipe up after the tour' },
     { num: 'Track 3', emoji: '🦕', type: 'black',
       grooveColor1: '#0a0a2a', grooveColor2: '#15103d',
       labelGrad: ['#2C3E50','#4A148C'],
-      src: 'track3.mp3' },
+      src: 'track3.mp3', hint: 'swipe up after our visit' },
     { num: 'Track 4', emoji: '🪓', type: 'black',
       grooveColor1: '#1a0f05', grooveColor2: '#2d1a0a',
       labelGrad: ['#8B4513','#CD853F'],
-      src: 'track4.mp3' },
+      src: 'track4.mp3', hint: 'swipe up after our meal' },
     { num: 'Track 5', emoji: '🎵', type: 'black',
       grooveColor1: '#1a0520', grooveColor2: '#2d0a35',
       labelGrad: ['#E91E63','#9C27B0'],
-      src: 'track5.mp3' },
+      src: 'track5.mp3', hint: 'swipe up after the show' },
     { num: 'Track 6', emoji: '🌙', type: 'gold',
       grooveColor1: '#2a2008', grooveColor2: '#3d3010',
       labelGrad: ['#1a237e','#4a148c'],
-      src: 'track6.mp3' },
+      src: 'track6.mp3', hint: 'swipe up tomorrow' },
     { num: 'Track 7', emoji: '🎶', type: 'platinum',
       grooveColor1: '#1a1a20', grooveColor2: '#2a2a35',
       labelGrad: ['#888','#ccc'],
-      src: 'nothing-rhymes-with-avi.mp3' },
+      src: 'nothing-rhymes-with-avi.mp3', hint: 'swipe up when you\'re ready' },
     { num: 'Track 8', emoji: '✈️', type: 'holographic',
       grooveColor1: '#1a1020', grooveColor2: '#201530',
       labelGrad: ['#FFD700','#FF6B35','#FF3864','#7B68EE'],
       src: '',
-      spotify: true }
+      spotify: true, hint: '' }
   ];
 
   // ===== VINYL DRAWING =====
@@ -605,13 +605,16 @@
       if (t.spotify) {
         vinylInner.classList.add('spinning');
         spotifyOverlay.innerHTML = '<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/1VqentdFTvxluBvmB2QpNd?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>';
+        if (t.hint) swipeHint.querySelector('span:last-child').textContent = t.hint;
         setTimeout(() => {
           spotifyOverlay.classList.add('visible');
-          swipeHint.classList.add('visible');
+          if (t.hint) swipeHint.classList.add('visible');
         }, 800);
       } else {
         startAudio(t.src);
         // Show swipe hint after song has been playing a bit
+        const hintText = t.hint || 'swipe up';
+        swipeHint.querySelector('span:last-child').textContent = hintText;
         setTimeout(() => swipeHint.classList.add('visible'), 8000);
         audioEl.onended = () => {
           swipeHint.classList.add('visible');
