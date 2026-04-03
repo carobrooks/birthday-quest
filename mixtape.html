@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NEIL'S BIRTHDAY MIXTAPE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #141420;
+    --surface2: #1c1c2e;
+    --accent: #ff6b35;
+    --accent2: #ff3864;
+    --warm: #f5c542;
+    --cool: #7b68ee;
+    --teal: #2dd4bf;
+    --text: #f0ece2;
+    --muted: #6b6b8d;
+    --vinyl: #1a1a1a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  #title-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    transition: opacity 1s ease;
+    padding: 24px;
+  }
+
+  #title-screen.hidden { opacity: 0; pointer-events: none; }
+
+  /* Cassette tape */
+  .cassette {
+    width: 220px;
+    height: 140px;
+    background: #2a2a3a;
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+    border: 1px solid #3a3a4a;
+  }
+
+  .cassette-label {
+    position: absolute;
+    top: 10px; left: 16px; right: 16px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+  }
+
+  .cassette-label-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .cassette-label-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: white;
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  .cassette-holes {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+  }
+
+  .cassette-hole {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid #4a4a5a;
+    position: relative;
+  }
+
+  .cassette-hole::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4a4a5a;
+  }
+
+  .cassette-hole.spinning::after {
+    animation: spinReel 1s linear infinite;
+  }
+
+  @keyframes spinReel {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .cassette-window {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 20px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    border: 1px solid #4a4a5a;
+    overflow: hidden;
+  }
+
+  .cassette-tape-inner {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    background: #553322;
+  }
+
+  .title-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: clamp(28px, 7vw, 44px);
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+
+  .title-subtitle {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(9px, 2.5vw, 12px);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 24px;
+  }
+
+  .title-message {
+    font-size: clamp(12px, 3vw, 15px);
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.9;
+    max-width: 340px;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .title-message em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .play-tape-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--bg);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    padding: 14px 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 20px rgba(255, 107, 53, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  .play-tape-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(255, 107, 53, 0.5);
+  }
+
+  .play-tape-btn:active { transform: translateY(0); }
+
+  /* ===== MAIN PLAYER ===== */
+  #player {
+    display: none;
+    position: relative;
+    z-index: 5;
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  #player.active { display: block; }
+
+  /* Top bar */
+  .top-bar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .top-bar-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .track-counter {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  /* Progress timeline */
+  .timeline {
+    padding: 0 20px;
+    margin: 16px 0;
+  }
+
+  .timeline-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .timeline-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.8s ease;
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+  }
+
+  /* ===== TRACK CARD ===== */
+  .track-card {
+    display: none;
+    padding: 20px;
+    animation: trackFadeIn 0.6s ease-out;
+  }
+
+  .track-card.active { display: block; }
+
+  @keyframes trackFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Vinyl record visualization */
+  .vinyl-container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+
+  .vinyl {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: repeating-radial-gradient(
+      circle at center,
+      #111 0px, #111 2px,
+      #1a1a1a 2px, #1a1a1a 4px
+    );
+    position: relative;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+  }
+
+  .vinyl.spinning { animation: vinylSpin 3s linear infinite; }
+
+  @keyframes vinylSpin { to { transform: rotate(360deg); } }
+
+  .vinyl-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .vinyl-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bg);
+    z-index: 2;
+  }
+
+  /* Track info */
+  .track-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .track-title {
+    font-weight: 700;
+    font-size: clamp(22px, 5.5vw, 30px);
+    text-align: center;
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .track-genre {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--cool);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  /* Waveform */
+  .waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    height: 40px;
+    margin: 16px 0;
+  }
+
+  .wave-bar {
+    width: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: height 0.15s ease;
+    opacity: 0.6;
+  }
+
+  .waveform.playing .wave-bar {
+    animation: waveAnim 0.8s ease-in-out infinite alternate;
+    opacity: 1;
+  }
+
+  @keyframes waveAnim {
+    0% { height: 4px; }
+    100% { height: 36px; }
+  }
+
+  /* Audio player */
+  .audio-container {
+    margin: 12px 0 20px;
+  }
+
+  .audio-container audio {
+    width: 100%;
+    height: 36px;
+    border-radius: 8px;
+    outline: none;
+  }
+
+  /* Clue box */
+  .clue-box {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    text-align: center;
+  }
+
+  .clue-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+  }
+
+  .clue-text {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* Reveal box */
+  .reveal-box {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid rgba(255, 107, 53, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 16px 0;
+    text-align: center;
+    animation: revealPop 0.5s cubic-bezier(0.17, 0.67, 0.35, 1.1);
+  }
+
+  .reveal-box.visible { display: block; }
+
+  @keyframes revealPop {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .reveal-venue {
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .reveal-desc {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text);
+    font-weight: 300;
+    margin-bottom: 12px;
+  }
+
+  .reveal-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--warm);
+    letter-spacing: 1px;
+  }
+
+  .reveal-address {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    line-height: 1.8;
+  }
+
+  .reveal-address a {
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .btn-reveal {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 8px 4px;
+    display: inline-block;
+  }
+
+  .btn-reveal:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(255, 107, 53, 0.15);
+  }
+
+  .btn-next {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--bg);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: none;
+    margin: 8px 4px;
+    box-shadow: 0 4px 15px rgba(255, 107, 53, 0.3);
+  }
+
+  .btn-next:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 25px rgba(255, 107, 53, 0.4);
+  }
+
+  .btn-next.visible { display: inline-block; }
+
+  .btn-area {
+    text-align: center;
+    margin: 20px 0;
+  }
+
+  /* ===== HIDDEN TRACK REVEAL ===== */
+  #hidden-track-tease {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+    animation: trackFadeIn 1s ease-out;
+  }
+
+  #hidden-track-tease.active { display: block; }
+
+  .hidden-track-dots {
+    font-size: 20px;
+    color: var(--muted);
+    margin: 20px 0;
+    animation: dotsFlicker 2s ease-in-out infinite;
+  }
+
+  @keyframes dotsFlicker {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  .hidden-track-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+
+  /* ===== VICTORY ===== */
+  #victory {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    overflow-y: auto;
+  }
+
+  #victory.active { display: flex; }
+
+  .victory-title {
+    font-weight: 700;
+    font-size: clamp(24px, 6vw, 36px);
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+  }
+
+  .victory-message {
+    font-size: clamp(12px, 3vw, 15px);
+    color: var(--muted);
+    line-height: 2;
+    max-width: 380px;
+    font-weight: 300;
+  }
+
+  .victory-message em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .victory-message strong {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    z-index: 201;
+    border-radius: 2px;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(1080deg); opacity: 0; }
+  }
+
+  /* Spotify embed container */
+  .spotify-container {
+    margin: 16px 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  /* Reset */
+  .reset-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 999;
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+
+  .reset-btn:hover { opacity: 1; }
+
+  /* Neil's song player */
+  .neil-song-section {
+    margin-top: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(255,56,100,0.1));
+    border: 1px solid rgba(255,107,53,0.2);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .neil-song-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    color: var(--warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .neil-song-section audio {
+    width: 100%;
+    height: 36px;
+  }
+
+  @media (max-width: 400px) {
+    .vinyl-container { width: 160px; height: 160px; }
+    .vinyl { width: 160px; height: 160px; }
+    .vinyl-label { width: 56px; height: 56px; font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== TITLE SCREEN ===== -->
+<div id="title-screen">
+  <div class="cassette">
+    <div class="cassette-label">
+      <div class="cassette-label-text">Side A — Birthday Edition</div>
+      <div class="cassette-label-title">NEIL'S MIXTAPE</div>
+    </div>
+    <div class="cassette-holes">
+      <div class="cassette-hole" id="reel1"></div>
+      <div class="cassette-hole" id="reel2"></div>
+    </div>
+    <div class="cassette-window">
+      <div class="cassette-tape-inner"></div>
+    </div>
+  </div>
+  <div class="title-name">Neil's Birthday Mixtape</div>
+  <div class="title-subtitle">A 24-Hour Soundtrack</div>
+  <div class="title-message">
+    I made you a mixtape, Neil.<br><br>
+    Each track is a song.<br>
+    Each song is a place.<br>
+    Each place is an adventure.<br><br>
+    <em>It's criminal how much I love you.</em><br><br>
+    Press play. Let's go.
+  </div>
+  <button class="play-tape-btn" id="startBtn">▶ &nbsp;PRESS PLAY</button>
+</div>
+
+<!-- ===== MAIN PLAYER ===== -->
+<div id="player">
+  <div class="top-bar">
+    <span class="top-bar-title">Neil's Birthday Mixtape</span>
+    <span class="track-counter" id="trackCounter">Track 1 / 9</span>
+  </div>
+
+  <div class="timeline">
+    <div class="timeline-bar">
+      <div class="timeline-fill" id="timelineFill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- Track 1: Lattes -->
+  <div class="track-card" id="track-0">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-0">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #8B6914, #D4A843);">☕</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 01</div>
+    <div class="track-title">The Awakening Potion</div>
+    <div class="track-genre">Lo-Fi Chill</div>
+    <div class="waveform" id="wave-0"></div>
+    <div class="audio-container"><audio id="audio-0" src="track1.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-0">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Can you guess where we're going?</div>
+    </div>
+    <div class="reveal-box" id="reveal-0">
+      <div class="reveal-venue">☕ Latte Time</div>
+      <div class="reveal-desc">Grab your morning lattes and fuel up — this playlist has a long runtime.</div>
+      <div class="reveal-time">⏰ Morning — whenever you rise</div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-0">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-0">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 2: Mosaic Tile House -->
+  <div class="track-card" id="track-1">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-1">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #E8725A, #F5B041);">🎨</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 02</div>
+    <div class="track-title">Crystal Mosaic</div>
+    <div class="track-genre">Dream Pop</div>
+    <div class="waveform" id="wave-1"></div>
+    <div class="audio-container"><audio id="audio-1" src="track2.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-1">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Pay attention to the third verse...</div>
+    </div>
+    <div class="reveal-box" id="reveal-1">
+      <div class="reveal-venue">🎨 The Mosaic Tile House</div>
+      <div class="reveal-desc">A private home turned total art installation — every inch covered in dazzling mosaic tiles and found objects.</div>
+      <div class="reveal-time">⏰ 1:30 PM — Tour time</div>
+      <div class="reveal-address">📍 1116 Palms Blvd, Venice CA<br><a href="https://maps.google.com/?q=1116+Palms+Blvd+Venice+CA" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-1">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-1">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 3: Museum of Jurassic Technology -->
+  <div class="track-card" id="track-2">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-2">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #2C3E50, #4A148C);">🦕</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 03</div>
+    <div class="track-title">Phantom Zone</div>
+    <div class="track-genre">Dark Ambient</div>
+    <div class="waveform" id="wave-2"></div>
+    <div class="audio-container"><audio id="audio-2" src="track3.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-2">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. This one's strange... just like where we're going.</div>
+    </div>
+    <div class="reveal-box" id="reveal-2">
+      <div class="reveal-venue">🦕 Museum of Jurassic Technology</div>
+      <div class="reveal-desc">LA's most wonderfully strange museum — a cabinet of curiosities where reality and fiction blur together beautifully.</div>
+      <div class="reveal-time">⏰ 3:15 PM — Reservation</div>
+      <div class="reveal-address">📍 9341 Venice Blvd, Culver City<br><a href="https://maps.google.com/?q=9341+Venice+Blvd+Culver+City+CA" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-2">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-2">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 4: Hatchet Hall -->
+  <div class="track-card" id="track-3">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-3">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #8B4513, #CD853F);">🪓</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 04</div>
+    <div class="track-title">Whiskey & Biscuits</div>
+    <div class="track-genre">Southern Blues</div>
+    <div class="waveform" id="wave-3"></div>
+    <div class="audio-container"><audio id="audio-3" src="track4.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-3">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Hear that grit? That's dinner talking.</div>
+    </div>
+    <div class="reveal-box" id="reveal-3">
+      <div class="reveal-venue">🪓 Hatchet Hall + The Old Man Bar</div>
+      <div class="reveal-desc">Southern-inspired feast with whole-animal cookery. Then slip into The Old Man Bar — a cozy, dimly lit whiskey den tucked in the back.</div>
+      <div class="reveal-time">⏰ 5:15 PM — Dinner reservation</div>
+      <div class="reveal-address">📍 10543 Pico Blvd, Los Angeles<br><a href="https://maps.google.com/?q=10543+Pico+Blvd+Los+Angeles+CA" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-3">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-3">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 5: Wild Up -->
+  <div class="track-card" id="track-4">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-4">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #E91E63, #9C27B0);">🎵</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 05</div>
+    <div class="track-title">Sonic Frequencies</div>
+    <div class="track-genre">Experimental Orchestral</div>
+    <div class="waveform" id="wave-4"></div>
+    <div class="audio-container"><audio id="audio-4" src="track5.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-4">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Tonight gets WILD.</div>
+    </div>
+    <div class="reveal-box" id="reveal-4">
+      <div class="reveal-venue">🎵 Wild Up — Live at The Nimoy</div>
+      <div class="reveal-desc">Genre-defying experimental ensemble Wild Up (the Tiny Desk legends!) live at UCLA's Nimoy Theater. Presented by CAP UCLA.</div>
+      <div class="reveal-time">⏰ 8:00 PM — Showtime</div>
+      <div class="reveal-address">📍 The Nimoy Theater, UCLA Campus<br><a href="https://maps.google.com/?q=Nimoy+Theater+UCLA" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-4">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-4">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 6: Pali Hotel -->
+  <div class="track-card" id="track-5">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-5">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #1a237e, #4a148c);">🌙</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 06</div>
+    <div class="track-title">Midnight Interlude</div>
+    <div class="track-genre">Slow R&B</div>
+    <div class="waveform" id="wave-5"></div>
+    <div class="audio-container"><audio id="audio-5" src="track6.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-5">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Listen to the lyrics, Neil...</div>
+    </div>
+    <div class="reveal-box" id="reveal-5">
+      <div class="reveal-venue">🌙 The Pali Hotel — Westwood</div>
+      <div class="reveal-desc">A chic boutique hotel for your nightcap and some well-earned rest (or whatever the night brings...)</div>
+      <div class="reveal-time">⏰ Late night — no rush</div>
+      <div class="reveal-address">📍 10740 Wilshire Blvd, Westwood<br><a href="https://maps.google.com/?q=Pali+Hotel+Westwood" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-5">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-5">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 7: Flea Market -->
+  <div class="track-card" id="track-6">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-6">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #E65100, #FFB300);">🛍️</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 07 — Sunday</div>
+    <div class="track-title">Treasure Digging</div>
+    <div class="track-genre">Vintage Funk</div>
+    <div class="waveform" id="wave-6"></div>
+    <div class="audio-container"><audio id="audio-6" src="track7.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-6">
+      <div class="clue-label">Listen closely</div>
+      <div class="clue-text">The song is your clue. Sunday morning — this one's groovy.</div>
+    </div>
+    <div class="reveal-box" id="reveal-6">
+      <div class="reveal-venue">🛍️ Santa Monica Airport Flea Market</div>
+      <div class="reveal-desc">Open-air vintage market on the airport grounds — dig for records, vintage finds, furniture, and collectibles!</div>
+      <div class="reveal-time">⏰ Sunday morning</div>
+      <div class="reveal-address">📍 Santa Monica Airport, 3223 Donald Douglas Loop S<br><a href="https://maps.google.com/?q=Santa+Monica+Airport+Flea+Market" target="_blank">Open in Maps →</a></div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-6">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-6">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Track 8: Back to Work / Sunno Surprise -->
+  <div class="track-card" id="track-7">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-7">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #333, #666);">💼</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Track 08 — Sunday</div>
+    <div class="track-title">Back to Work</div>
+    <div class="track-genre">???</div>
+    <div class="waveform" id="wave-7"></div>
+    <div class="audio-container" id="audioContainer-7" style="display:none"><audio id="audio-7" src="nothing-rhymes-with-avi.mp3" preload="auto"></audio></div>
+    <div class="clue-box" id="clue-7">
+      <div class="clue-label">The mixtape is almost over...</div>
+      <div class="clue-text">All good things must end, Neil. The weekend is over. Time to head back to work. Yeah, on a Sunday. I know. Fun's over. Just trust me on this one. Head in to the office. Don't ask questions.</div>
+    </div>
+    <div class="reveal-box" id="reveal-7">
+      <div class="reveal-venue">🎶 SURPRISE!!!</div>
+      <div class="reveal-desc">JK. You're not going back to work. Your friends are here. The maestro has been summoned. It's a private music improv workshop — birthday edition!<br><br>SURPRISE, NEIL!</div>
+      <div class="reveal-time">⏰ 2:00 PM — The Grand Finale</div>
+      <div class="reveal-address">📍 Sunno<br><a href="https://maps.google.com/?q=Sunno" target="_blank">Open in Maps →</a></div>
+      <div class="neil-song-section">
+        <div class="neil-song-label">♫ Now Playing: Nothing Rhymes With Avi — by Neil ♫</div>
+        <audio controls src="nothing-rhymes-with-avi.mp3" style="width: 100%; height: 36px;"></audio>
+      </div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-7">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-7">Next Track →</button>
+    </div>
+  </div>
+
+  <!-- Hidden Track Tease -->
+  <div id="hidden-track-tease">
+    <div class="hidden-track-dots">· · ·</div>
+    <div class="hidden-track-text">Wait... there's a hidden track</div>
+    <button class="btn-next visible" id="hiddenTrackBtn" style="display:inline-block">▶ Play Hidden Track</button>
+  </div>
+
+  <!-- Track 9: HIDDEN TRACK — Jacob Collier -->
+  <div class="track-card" id="track-8">
+    <div class="vinyl-container">
+      <div class="vinyl" id="vinyl-8">
+        <div class="vinyl-label" style="background: linear-gradient(135deg, #FFD700, #FF6B35, #FF3864, #7B68EE);">✈️</div>
+        <div class="vinyl-center"></div>
+      </div>
+    </div>
+    <div class="track-number">Hidden Track</div>
+    <div class="track-title">One More Thing...</div>
+    <div class="track-genre">The Finale</div>
+    <div class="waveform" id="wave-8"></div>
+    <div class="clue-box" id="clue-8">
+      <div class="clue-label">This isn't over yet, Neil.</div>
+      <div class="clue-text">You thought the mixtape was done? There's one more surprise. This one requires a passport. We're leaving LA.</div>
+    </div>
+    <div class="reveal-box" id="reveal-8">
+      <div class="reveal-venue">✈️ JACOB COLLIER — LIVE IN VANCOUVER</div>
+      <div class="reveal-desc">We're going to Vancouver next weekend to see Jacob Collier live. Surprise. Pack your bags, Neil.</div>
+      <div class="reveal-time">⏰ Next weekend — Vancouver, BC</div>
+      <div class="spotify-container">
+        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/1VqentdFTvxluBvmB2QpNd?utm_source=generator" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="btn-area">
+      <button class="btn-reveal" id="revealBtn-8">Where are we going?</button>
+      <button class="btn-next" id="nextBtn-8">Finish Mixtape ★</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VICTORY ===== -->
+<div id="victory">
+  <div class="victory-title">End of Mixtape</div>
+  <div style="font-size: 48px; margin: 16px 0;">♥</div>
+  <div class="victory-message">
+    Happy birthday, <em>Neil</em>.<br><br>
+    <strong>It's criminal how much I love you.</strong><br><br>
+    You are loved more than all the pixels<br>
+    in all the games ever made.<br><br>
+    More than all the notes in all<br>
+    the songs ever written.<br><br>
+    More than all the frequencies<br>
+    in all the spectrums ever heard.<br><br>
+    Thank you for being my favorite sound.<br><br>
+    ♥ ♥ ♥
+  </div>
+</div>
+
+<button class="reset-btn" id="resetBtn" style="display:none">↺ Reset</button>
+
+<script>
+  // ===== AUTO-RESET =====
+  if (window.location.search.includes('reset') || window.location.hash.includes('reset')) {
+    localStorage.removeItem('mixtape-state');
+    window.location.hash = '';
+    try { window.history.replaceState({}, '', window.location.pathname); } catch(e) {}
+  }
+
+  // ===== CONFIG =====
+  const TOTAL_TRACKS = 9; // 8 + hidden track
+
+  // ===== STATE =====
+  let state = loadState();
+
+  function defaultState() { return { current: 0, revealed: [], completed: [], hiddenUnlocked: false }; }
+
+  function loadState() {
+    try {
+      const s = JSON.parse(localStorage.getItem('mixtape-state'));
+      return s && typeof s.current === 'number' ? s : defaultState();
+    } catch(e) { return defaultState(); }
+  }
+
+  function saveState() { localStorage.setItem('mixtape-state', JSON.stringify(state)); }
+
+  // ===== WAVEFORM GENERATION =====
+  function buildWaveforms() {
+    for (let i = 0; i < TOTAL_TRACKS; i++) {
+      const wf = document.getElementById('wave-' + i);
+      if (!wf) continue;
+      for (let b = 0; b < 40; b++) {
+        const bar = document.createElement('div');
+        bar.className = 'wave-bar';
+        const h = 4 + Math.random() * 28;
+        bar.style.height = h + 'px';
+        bar.style.animationDelay = (Math.random() * 0.8) + 's';
+        bar.style.animationDuration = (0.4 + Math.random() * 0.6) + 's';
+        wf.appendChild(bar);
+      }
+    }
+  }
+
+  // ===== AUDIO MANAGEMENT =====
+  let currentAudio = null;
+
+  function playTrackAudio(idx) {
+    stopAudio();
+    const audio = document.getElementById('audio-' + idx);
+    if (!audio) return;
+    const vinyl = document.getElementById('vinyl-' + idx);
+    const wave = document.getElementById('wave-' + idx);
+
+    audio.currentTime = 0;
+    audio.play().then(() => {
+      if (vinyl) vinyl.classList.add('spinning');
+      if (wave) wave.classList.add('playing');
+    }).catch(() => {
+      // Audio not available — that's fine, show visual feedback anyway
+      if (vinyl) vinyl.classList.add('spinning');
+      if (wave) wave.classList.add('playing');
+    });
+
+    audio.onended = () => {
+      audio.currentTime = 0;
+      audio.play().catch(() => {});
+    };
+
+    currentAudio = audio;
+  }
+
+  function stopAudio() {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      currentAudio.onended = null;
+    }
+    // Stop all visuals
+    document.querySelectorAll('.vinyl').forEach(v => v.classList.remove('spinning'));
+    document.querySelectorAll('.waveform').forEach(w => w.classList.remove('playing'));
+    currentAudio = null;
+  }
+
+  // ===== CONFETTI =====
+  function launchConfetti() {
+    const colors = ['#FFD700','#FF6B35','#FF3864','#7B68EE','#2dd4bf','#f0ece2'];
+    for (let i = 0; i < 80; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.width = (3 + Math.random() * 8) + 'px';
+        c.style.height = (3 + Math.random() * 8) + 'px';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (2 + Math.random() * 3) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+      }, i * 40);
+    }
+  }
+
+  // ===== RENDER =====
+  function render() {
+    // Track counter
+    document.getElementById('trackCounter').textContent = 'Track ' + Math.min(state.current + 1, TOTAL_TRACKS) + ' / ' + TOTAL_TRACKS;
+
+    // Timeline
+    document.getElementById('timelineFill').style.width = (state.completed.length / TOTAL_TRACKS * 100) + '%';
+
+    // Hide all tracks
+    for (let i = 0; i < TOTAL_TRACKS; i++) {
+      const card = document.getElementById('track-' + i);
+      if (!card) continue;
+      card.classList.remove('active');
+
+      const clue = document.getElementById('clue-' + i);
+      const reveal = document.getElementById('reveal-' + i);
+      const revealBtn = document.getElementById('revealBtn-' + i);
+      const nextBtn = document.getElementById('nextBtn-' + i);
+
+      if (i === state.current && (i < 8 || state.hiddenUnlocked)) {
+        card.classList.add('active');
+
+        if (state.revealed.includes(i)) {
+          if (clue) clue.style.display = 'none';
+          if (reveal) reveal.classList.add('visible');
+          if (revealBtn) revealBtn.style.display = 'none';
+          if (nextBtn) nextBtn.classList.add('visible');
+        } else {
+          if (clue) clue.style.display = 'block';
+          if (reveal) reveal.classList.remove('visible');
+          if (revealBtn) revealBtn.style.display = 'inline-block';
+          if (nextBtn) nextBtn.classList.remove('visible');
+        }
+      }
+    }
+
+    // Hidden track tease — show after track 8 completes
+    const tease = document.getElementById('hidden-track-tease');
+    if (state.current === 8 && !state.hiddenUnlocked && state.completed.includes(7)) {
+      tease.classList.add('active');
+    } else {
+      tease.classList.remove('active');
+    }
+
+    // Victory
+    if (state.completed.length === TOTAL_TRACKS) {
+      stopAudio();
+      document.getElementById('victory').classList.add('active');
+      launchConfetti();
+    }
+  }
+
+  // ===== ACTIONS =====
+  function revealTrack(i) {
+    if (state.revealed.includes(i)) return;
+    state.revealed.push(i);
+    saveState();
+    render();
+  }
+
+  function nextTrack(i) {
+    if (state.completed.includes(i)) return;
+    state.completed.push(i);
+    state.current = i + 1;
+    saveState();
+    stopAudio();
+
+    // If completing track 8 (index 7), show hidden track tease
+    if (i === 7) {
+      render();
+      return;
+    }
+
+    // Start next track's audio
+    if (state.current < TOTAL_TRACKS) {
+      setTimeout(() => {
+        playTrackAudio(state.current);
+        render();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 300);
+    } else {
+      render();
+    }
+  }
+
+  function unlockHiddenTrack() {
+    state.hiddenUnlocked = true;
+    saveState();
+    playTrackAudio(8);
+    render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ===== WIRE UP BUTTONS =====
+  for (let i = 0; i < TOTAL_TRACKS; i++) {
+    const rb = document.getElementById('revealBtn-' + i);
+    const nb = document.getElementById('nextBtn-' + i);
+    if (rb) rb.addEventListener('click', () => revealTrack(i));
+    if (nb) nb.addEventListener('click', () => nextTrack(i));
+  }
+
+  document.getElementById('hiddenTrackBtn').addEventListener('click', unlockHiddenTrack);
+
+  // ===== INIT =====
+  buildWaveforms();
+
+  const titleScreen = document.getElementById('title-screen');
+  const playerEl = document.getElementById('player');
+  const resetEl = document.getElementById('resetBtn');
+
+  // Resume if already started
+  if (state.completed.length > 0 || state.revealed.length > 0) {
+    titleScreen.style.display = 'none';
+    playerEl.classList.add('active');
+    resetEl.style.display = 'block';
+    playTrackAudio(Math.min(state.current, TOTAL_TRACKS - 1));
+    render();
+  }
+
+  // Start
+  document.getElementById('startBtn').addEventListener('click', () => {
+    document.getElementById('reel1').classList.add('spinning');
+    document.getElementById('reel2').classList.add('spinning');
+    titleScreen.classList.add('hidden');
+    setTimeout(() => {
+      titleScreen.style.display = 'none';
+      playerEl.classList.add('active');
+      resetEl.style.display = 'block';
+      playTrackAudio(0);
+      render();
+    }, 1000);
+  });
+
+  // Reset
+  resetEl.addEventListener('click', () => {
+    if (confirm('Reset the entire mixtape?')) {
+      state = defaultState();
+      saveState();
+      stopAudio();
+      document.getElementById('victory').classList.remove('active');
+      render();
+      window.scrollTo({ top: 0 });
+    }
+  });
+
+  window.addEventListener('beforeunload', saveState);
+</script>
+</body>
+</html>

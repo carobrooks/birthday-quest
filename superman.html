@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SUPERMAN'S BIRTHDAY QUEST</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --superman-blue: #0033A0;
+    --superman-red: #ED1D24;
+    --superman-yellow: #FFD700;
+    --superman-dark: #0a0a2e;
+    --superman-sky: #1a3a6a;
+    --text: #fffffe;
+    --muted: #8899bb;
+  }
+
+  body {
+    background: var(--superman-dark);
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ===== CITY SKYLINE BACKGROUND ===== */
+  .city-bg {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 40vh;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .building {
+    position: absolute;
+    bottom: 0;
+    background: #0d0d3a;
+    border: 1px solid #1a1a5e;
+  }
+
+  .building .window {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--superman-yellow);
+    opacity: 0.6;
+  }
+
+  /* Stars */
+  .sky {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 0%, #0d1b3e 0%, #060614 70%);
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite alternate;
+  }
+
+  @keyframes twinkle { 0% { opacity: 0.1; } 100% { opacity: 1; } }
+
+  /* ===== SUPERMAN SPRITE ===== */
+  .superman-sprite {
+    position: fixed;
+    z-index: 10;
+    font-size: 40px;
+    filter: drop-shadow(0 0 20px rgba(237, 29, 36, 0.6));
+    transition: all 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    pointer-events: none;
+  }
+
+  .superman-sprite.flying {
+    animation: supermanFly 2s ease-in-out;
+  }
+
+  @keyframes supermanFly {
+    0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+    30% { transform: translate(40vw, -30vh) rotate(-15deg) scale(1.3); }
+    60% { transform: translate(80vw, -50vh) rotate(-10deg) scale(0.5); opacity: 0.3; }
+    61% { transform: translate(-20vw, 20vh) rotate(10deg) scale(0.5); opacity: 0; }
+    80% { transform: translate(10vw, 5vh) rotate(5deg) scale(0.9); opacity: 0.8; }
+    100% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  #title-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at center, #0d1b3e 0%, #060614 70%);
+    transition: opacity 1s;
+  }
+
+  #title-screen.hidden { opacity: 0; pointer-events: none; }
+
+  .shield {
+    width: 120px;
+    height: 120px;
+    position: relative;
+    margin-bottom: 20px;
+    animation: shieldPulse 2s ease-in-out infinite;
+  }
+
+  .shield-bg {
+    width: 120px;
+    height: 120px;
+    background: var(--superman-red);
+    clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 40px rgba(237, 29, 36, 0.5), 0 0 80px rgba(237, 29, 36, 0.2);
+  }
+
+  .shield-inner {
+    width: 96px;
+    height: 96px;
+    background: var(--superman-yellow);
+    clip-path: polygon(50% 5%, 92% 27%, 92% 73%, 50% 95%, 8% 73%, 8% 27%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shield-s {
+    font-family: 'Bangers', cursive;
+    font-size: 64px;
+    color: var(--superman-red);
+    text-shadow: 2px 2px 0 #8B0000;
+    line-height: 1;
+    margin-top: -4px;
+  }
+
+  @keyframes shieldPulse {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.05); filter: brightness(1.2); }
+  }
+
+  .title-main {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(28px, 8vw, 56px);
+    color: var(--superman-yellow);
+    text-shadow: 3px 3px 0 var(--superman-red), 6px 6px 0 rgba(0,0,0,0.5);
+    text-align: center;
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+  }
+
+  .title-sub {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(14px, 3.5vw, 22px);
+    color: var(--superman-red);
+    text-align: center;
+    letter-spacing: 3px;
+    margin-bottom: 24px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+  }
+
+  .title-story {
+    font-size: clamp(7px, 1.8vw, 9px);
+    color: var(--muted);
+    text-align: center;
+    line-height: 2.4;
+    max-width: 360px;
+    padding: 0 16px;
+    margin-bottom: 30px;
+  }
+
+  .title-story em {
+    color: var(--superman-yellow);
+    font-style: normal;
+  }
+
+  .start-btn {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(16px, 4vw, 24px);
+    color: var(--superman-yellow);
+    background: var(--superman-red);
+    border: 3px solid var(--superman-yellow);
+    padding: 14px 32px;
+    cursor: pointer;
+    letter-spacing: 3px;
+    animation: startPulse 1.2s ease-in-out infinite;
+    box-shadow: 0 0 30px rgba(237, 29, 36, 0.4);
+    transition: all 0.2s;
+  }
+
+  .start-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 50px rgba(237, 29, 36, 0.6);
+  }
+
+  .start-btn:active { transform: scale(0.97); }
+
+  @keyframes startPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(237, 29, 36, 0.4); }
+    50% { box-shadow: 0 0 50px rgba(237, 29, 36, 0.7); }
+  }
+
+  /* ===== GAME SCREEN ===== */
+  #game {
+    display: none;
+    position: relative;
+    z-index: 5;
+    min-height: 100vh;
+  }
+
+  #game.active { display: block; }
+
+  /* HUD */
+  .hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    background: rgba(10, 10, 46, 0.95);
+    border-bottom: 3px solid var(--superman-red);
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 7px;
+    backdrop-filter: blur(8px);
+  }
+
+  .hud-mission {
+    color: var(--superman-yellow);
+  }
+
+  .hud-score { color: var(--superman-red); }
+
+  .power-bar-container {
+    flex: 1;
+    max-width: 120px;
+    height: 10px;
+    background: #1a1a3e;
+    border: 1px solid var(--superman-yellow);
+    margin: 0 12px;
+    overflow: hidden;
+  }
+
+  .power-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--superman-red), var(--superman-yellow));
+    transition: width 0.8s ease;
+    box-shadow: 0 0 8px var(--superman-yellow);
+  }
+
+  /* ===== MISSION PANEL ===== */
+  .mission-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 440px;
+    min-height: 300px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+  }
+
+  .mission-panel.active {
+    display: flex;
+    animation: panelSlam 0.5s cubic-bezier(0.17, 0.67, 0.35, 1.2);
+  }
+
+  @keyframes panelSlam {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+    60% { transform: translate(-50%, -50%) scale(1.05) rotate(2deg); }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* Comic panel style */
+  .comic-panel {
+    background: #111133;
+    border: 4px solid var(--superman-yellow);
+    box-shadow:
+      0 0 0 2px var(--superman-red),
+      0 0 40px rgba(255, 215, 0, 0.15),
+      inset 0 0 40px rgba(0, 0, 0, 0.5);
+    padding: 24px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Halftone dots overlay */
+  .comic-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 4px 4px;
+    pointer-events: none;
+  }
+
+  .mission-number {
+    font-family: 'Bangers', cursive;
+    font-size: 14px;
+    color: var(--superman-dark);
+    background: var(--superman-yellow);
+    padding: 4px 16px;
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    border-bottom-right-radius: 8px;
+    letter-spacing: 2px;
+  }
+
+  .mission-icon {
+    font-size: 48px;
+    margin: 16px 0 12px;
+    filter: drop-shadow(0 0 10px rgba(255,215,0,0.3));
+    text-align: center;
+  }
+
+  .mission-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(20px, 5vw, 32px);
+    color: var(--superman-yellow);
+    text-shadow: 2px 2px 0 var(--superman-red);
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+
+  .mission-clue {
+    font-size: 8px;
+    line-height: 2.2;
+    color: var(--muted);
+    text-align: center;
+    padding: 12px;
+    background: rgba(0, 51, 160, 0.2);
+    border: 2px solid var(--superman-blue);
+    margin-bottom: 16px;
+  }
+
+  .mission-clue .narrator {
+    color: var(--superman-yellow);
+    font-size: 7px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* Reveal details */
+  .mission-reveal {
+    display: none;
+    width: 100%;
+    padding: 16px;
+    background: rgba(237, 29, 36, 0.1);
+    border: 2px solid var(--superman-red);
+    font-size: 8px;
+    line-height: 2.2;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 16px;
+    animation: revealPow 0.4s ease-out;
+  }
+
+  .mission-reveal.visible {
+    display: block;
+  }
+
+  @keyframes revealPow {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.05); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .mission-reveal .venue-name {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    color: var(--superman-yellow);
+    display: block;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .mission-reveal .venue-time {
+    color: var(--superman-red);
+    font-weight: bold;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .mission-reveal .venue-address {
+    color: var(--muted);
+    font-size: 6px;
+    display: block;
+    margin-top: 4px;
+    line-height: 2;
+  }
+
+  .mission-reveal .venue-address a {
+    color: var(--superman-yellow);
+    text-decoration: none;
+  }
+
+  /* Buttons */
+  .action-btn {
+    font-family: 'Bangers', cursive;
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 12px 28px;
+    border: 3px solid;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .action-btn:active { transform: scale(0.95); }
+
+  .btn-decode {
+    color: var(--superman-yellow);
+    border-color: var(--superman-yellow);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+  }
+
+  .btn-decode:hover {
+    background: var(--superman-yellow);
+    color: var(--superman-dark);
+  }
+
+  .btn-fly {
+    color: var(--text);
+    border-color: var(--superman-red);
+    background: var(--superman-red);
+    box-shadow: 0 0 20px rgba(237, 29, 36, 0.3);
+  }
+
+  .btn-fly:hover {
+    box-shadow: 0 0 30px rgba(237, 29, 36, 0.6);
+    transform: scale(1.03);
+  }
+
+  /* POW! transition */
+  #pow-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse, var(--superman-yellow) 0%, var(--superman-red) 50%, transparent 70%);
+  }
+
+  #pow-overlay.active {
+    display: flex;
+    animation: powBurst 0.8s ease-out forwards;
+  }
+
+  @keyframes powBurst {
+    0% { opacity: 0; transform: scale(0); }
+    20% { opacity: 1; transform: scale(1.2); }
+    40% { transform: scale(0.95); }
+    60% { transform: scale(1.05); }
+    100% { opacity: 0; transform: scale(2); }
+  }
+
+  .pow-text {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(48px, 15vw, 100px);
+    color: var(--superman-dark);
+    text-shadow: 4px 4px 0 var(--superman-red);
+    animation: powShake 0.3s ease-in-out;
+  }
+
+  @keyframes powShake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    75% { transform: rotate(8deg); }
+  }
+
+  /* ===== VICTORY SCREEN ===== */
+  #victory {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    background: radial-gradient(ellipse at center, #0d1b3e 0%, #060614 70%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+
+  #victory.active { display: flex; }
+
+  .victory-title {
+    font-family: 'Bangers', cursive;
+    font-size: clamp(24px, 7vw, 48px);
+    color: var(--superman-yellow);
+    text-shadow: 3px 3px 0 var(--superman-red);
+    margin-bottom: 16px;
+    letter-spacing: 3px;
+  }
+
+  .victory-heart {
+    font-size: 48px;
+    margin: 16px 0;
+    animation: heartBeat 1s ease-in-out infinite;
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+  }
+
+  .victory-message {
+    font-size: clamp(7px, 2vw, 10px);
+    color: var(--muted);
+    line-height: 2.6;
+    max-width: 380px;
+  }
+
+  .victory-message em {
+    color: var(--superman-yellow);
+    font-style: normal;
+  }
+
+  .victory-message strong {
+    color: var(--superman-red);
+  }
+
+  .victory-score {
+    font-family: 'Bangers', cursive;
+    font-size: 24px;
+    color: var(--superman-yellow);
+    margin-top: 20px;
+    letter-spacing: 2px;
+  }
+
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    z-index: 201;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(1080deg); opacity: 0; }
+  }
+
+  /* Music bar */
+  .music-hud {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 20;
+    background: rgba(10, 10, 46, 0.95);
+    border-top: 2px solid var(--superman-blue);
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 7px;
+    backdrop-filter: blur(8px);
+  }
+
+  .music-hud-title { color: var(--superman-yellow); }
+
+  .eq-bars {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 12px;
+  }
+
+  .eq-bar {
+    width: 3px;
+    background: var(--superman-red);
+    animation: eqBounce 0.5s ease-in-out infinite alternate;
+  }
+
+  .eq-bar:nth-child(1) { animation-delay: 0s; }
+  .eq-bar:nth-child(2) { animation-delay: 0.1s; }
+  .eq-bar:nth-child(3) { animation-delay: 0.2s; }
+  .eq-bar:nth-child(4) { animation-delay: 0.15s; }
+  .eq-bar:nth-child(5) { animation-delay: 0.05s; }
+
+  @keyframes eqBounce {
+    0% { height: 2px; }
+    100% { height: 12px; }
+  }
+
+  .eq-bars.paused .eq-bar {
+    animation: none;
+    height: 2px;
+  }
+
+  .music-toggle-btn {
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 2px;
+  }
+
+  /* Reset */
+  .reset-btn {
+    position: fixed;
+    top: 40px;
+    right: 8px;
+    z-index: 999;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 6px;
+    color: var(--muted);
+    background: rgba(10,10,46,0.9);
+    border: 1px solid #2a2a5e;
+    padding: 6px 10px;
+    cursor: pointer;
+    opacity: 0.5;
+  }
+
+  .reset-btn:hover { opacity: 1; color: var(--superman-red); border-color: var(--superman-red); }
+
+  /* Sound toggle */
+  .sound-toggle {
+    position: fixed;
+    top: 40px;
+    left: 8px;
+    z-index: 999;
+    font-size: 18px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.5;
+  }
+
+  .sound-toggle:hover { opacity: 1; }
+
+  /* Neil's song player on boss level */
+  .neil-player {
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(0, 51, 160, 0.2);
+    border: 2px solid var(--superman-blue);
+  }
+
+  .neil-player audio { width: 100%; height: 32px; }
+
+  .neil-player-label {
+    font-size: 6px;
+    color: var(--superman-yellow);
+    margin-bottom: 6px;
+    display: block;
+    text-align: center;
+  }
+
+  @media (max-width: 400px) {
+    .comic-panel { padding: 16px; }
+    .mission-icon { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+<div class="city-bg" id="cityBg"></div>
+
+<div class="superman-sprite" id="superman">🦸</div>
+
+<button class="sound-toggle" id="soundToggle">🔊</button>
+
+<!-- ===== TITLE SCREEN ===== -->
+<div id="title-screen">
+  <div class="shield">
+    <div class="shield-bg">
+      <div class="shield-inner">
+        <div class="shield-s">S</div>
+      </div>
+    </div>
+  </div>
+  <div class="title-main">NEIL'S BIRTHDAY QUEST</div>
+  <div class="title-sub">A SUPERMAN ADVENTURE</div>
+  <div class="title-story">
+    <em>METROPOLIS IS IN DANGER.</em><br>
+    SUPERMAN MUST COMPLETE 8 MISSIONS<br>
+    ACROSS THE CITY TO SAVE THE DAY.<br><br>
+    HIS BEAUTIFUL, BRILLIANT PARTNER<br>
+    AWAITS AT THE END OF EVERY QUEST...<br>
+    (OK SHE'S ALSO RIGHT NEXT TO HIM.<br>
+    <em>IT'S CRIMINAL HOW MUCH SHE LOVES HIM.</em>)<br><br>
+    HAPPY BIRTHDAY, NEIL. LET'S FLY.
+  </div>
+  <button class="start-btn" id="startBtn">UP, UP, AND AWAY!</button>
+</div>
+
+<!-- ===== POW TRANSITION ===== -->
+<div id="pow-overlay">
+  <div class="pow-text" id="powText">POW!</div>
+</div>
+
+<!-- ===== GAME ===== -->
+<div id="game">
+  <div class="hud">
+    <span class="hud-mission" id="hudMission">MISSION 1/8</span>
+    <div class="power-bar-container">
+      <div class="power-bar" id="powerBar" style="width: 0%"></div>
+    </div>
+    <span class="hud-score" id="hudScore">0 PTS</span>
+  </div>
+
+  <!-- Mission panels — only one visible at a time -->
+  <div class="mission-panel" id="panel-0">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 1</div>
+      <div class="mission-icon">☕</div>
+      <div class="mission-title">THE AWAKENING POTION</div>
+      <div class="mission-clue">
+        <span class="narrator">DAILY PLANET DISPATCH:</span>
+        Even Superman needs fuel before saving the world. Your first mission: acquire two sacred elixirs — steamed, frothy, and dangerously caffeinated. One for the hero, one for his partner in crime.
+      </div>
+      <div class="mission-reveal" id="reveal-0">
+        <span class="venue-name">☕ LATTE TIME, NEIL!</span>
+        Grab your morning lattes and fuel up — the adventure ahead is going to need superhuman energy.<br>
+        <span class="venue-time">⏰ MORNING — WHENEVER YOU RISE</span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-0">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-0" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-1">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 2</div>
+      <div class="mission-icon">🎨</div>
+      <div class="mission-title">THE CRYSTAL FORTRESS</div>
+      <div class="mission-clue">
+        <span class="narrator">SIGNAL INTERCEPTED:</span>
+        Deep in a Venice neighborhood (not Italy — the California one), there exists an enchanted dwelling. Every wall, every floor, every inch of sky is covered in a thousand tiny colored fragments. An artist's obsession made real. Superman must investigate this crystalline fortress.
+      </div>
+      <div class="mission-reveal" id="reveal-1">
+        <span class="venue-name">🎨 THE MOSAIC TILE HOUSE</span>
+        A private home turned total art installation — every surface covered in dazzling mosaic tiles and found objects by artists Cheri Pann and Gonzalo Duran.<br>
+        <span class="venue-time">⏰ 1:30 PM — TOUR TIME</span>
+        <span class="venue-address">📍 1116 Palms Blvd, Venice CA<br><a href="https://maps.google.com/?q=1116+Palms+Blvd+Venice+CA" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-1">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-1" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-2">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 3</div>
+      <div class="mission-icon">🦕</div>
+      <div class="mission-title">THE PHANTOM ZONE</div>
+      <div class="mission-clue">
+        <span class="narrator">JUSTICE LEAGUE ALERT:</span>
+        A strange portal has opened on Venice Boulevard. Inside, nothing is what it seems. Bats, ancient dice, sculptures tinier than a needle's eye... is it real? Is it a trap? Even Superman's X-ray vision can't tell. You must enter the Phantom Zone and decide for yourself.
+      </div>
+      <div class="mission-reveal" id="reveal-2">
+        <span class="venue-name">🦕 MUSEUM OF JURASSIC TECHNOLOGY</span>
+        LA's most wonderfully strange museum — a cabinet of curiosities where you can never quite tell what's real and what's invented.<br>
+        <span class="venue-time">⏰ 3:15 PM — RESERVATION</span>
+        <span class="venue-address">📍 9341 Venice Blvd, Culver City<br><a href="https://maps.google.com/?q=9341+Venice+Blvd+Culver+City+CA" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-2">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-2" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-3">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 4</div>
+      <div class="mission-icon">🪓</div>
+      <div class="mission-title">REFUEL THE HERO</div>
+      <div class="mission-clue">
+        <span class="narrator">POWER LEVELS CRITICAL:</span>
+        Superman's energy is fading. He must seek the hall named for a sharp-edged weapon. Inside: a southern feast fit for a Kryptonian. Biscuits. Whole-animal cookery. And through a hidden door, an old man pours amber Kryptonite (the good kind) in the shadows.
+      </div>
+      <div class="mission-reveal" id="reveal-3">
+        <span class="venue-name">🪓 HATCHET HALL + THE OLD MAN BAR</span>
+        Southern-inspired feast with whole-animal cookery and legendary biscuits. Then slip into The Old Man Bar — a cozy, dimly lit whiskey den tucked in the back.<br>
+        <span class="venue-time">⏰ 5:15 PM — DINNER RESERVATION</span>
+        <span class="venue-address">📍 10543 Pico Blvd, Los Angeles<br><a href="https://maps.google.com/?q=10543+Pico+Blvd+Los+Angeles+CA" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-3">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-3" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-4">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 5</div>
+      <div class="mission-icon">🎵</div>
+      <div class="mission-title">SONIC WARFARE</div>
+      <div class="mission-clue">
+        <span class="narrator">INCOMING TRANSMISSION:</span>
+        As night falls over Metropolis, a powerful sonic force has been detected in a theater named for a man who lived long and prospered. The sound is neither orchestra nor rock — something WILD and untamed. Superman must face the frequencies head-on. Sources say you may have seen these sonic warriors play behind a tiny desk...
+      </div>
+      <div class="mission-reveal" id="reveal-4">
+        <span class="venue-name">🎵 WILD UP — LIVE AT THE NIMOY</span>
+        Genre-defying experimental ensemble Wild Up (the Tiny Desk legends!) perform at UCLA's Nimoy Theater. Presented by CAP UCLA.<br>
+        <span class="venue-time">⏰ 8:00 PM — SHOWTIME</span>
+        <span class="venue-address">📍 The Nimoy Theater, UCLA Campus<br><a href="https://maps.google.com/?q=Nimoy+Theater+UCLA" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-4">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-4" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-5">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 6</div>
+      <div class="mission-icon">🏰</div>
+      <div class="mission-title">FORTRESS OF SOLITUDE</div>
+      <div class="mission-clue">
+        <span class="narrator">PRIVATE CHANNEL — ENCRYPTED:</span>
+        Every Superman needs a Fortress of Solitude. Tonight yours lies on a famous boulevard, just south of the theater. A boutique palace awaits with a nightcap... and perhaps something more. This is your reward, Neil. You've earned it.
+      </div>
+      <div class="mission-reveal" id="reveal-5">
+        <span class="venue-name">🏰 THE PALI HOTEL — WESTWOOD</span>
+        A chic boutique hotel for your nightcap and some well-earned rest (or whatever the night brings...)<br>
+        <span class="venue-time">⏰ LATE NIGHT — NO RUSH</span>
+        <span class="venue-address">📍 10740 Wilshire Blvd, Westwood<br><a href="https://maps.google.com/?q=Pali+Hotel+Westwood" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-5">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-5" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-6">
+    <div class="comic-panel">
+      <div class="mission-number">MISSION 7 — SUNDAY</div>
+      <div class="mission-icon">🛍️</div>
+      <div class="mission-title">TREASURE RECOVERY</div>
+      <div class="mission-clue">
+        <span class="narrator">SUNDAY MORNING BRIEFING:</span>
+        Rise and shine, Superman. Where planes once taxied, treasures now await recovery. Vintage wonders scattered across the tarmac — old records, curious artifacts, and hidden gems under the open California sky. Your mission: investigate and recover.
+      </div>
+      <div class="mission-reveal" id="reveal-6">
+        <span class="venue-name">🛍️ SANTA MONICA AIRPORT FLEA MARKET</span>
+        Open-air vintage market on the airport grounds — dig for records, vintage finds, furniture, and collectibles!<br>
+        <span class="venue-time">⏰ SUNDAY MORNING</span>
+        <span class="venue-address">📍 Santa Monica Airport, 3223 Donald Douglas Loop S<br><a href="https://maps.google.com/?q=Santa+Monica+Airport+Flea+Market" target="_blank">► NAVIGATE ◄</a></span>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-6">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-6" style="display:none">FLY TO NEXT MISSION →</button>
+    </div>
+  </div>
+
+  <div class="mission-panel" id="panel-7">
+    <div class="comic-panel">
+      <div class="mission-number">★ FINAL BOSS ★</div>
+      <div class="mission-icon">💼</div>
+      <div class="mission-title">BACK TO THE DAILY PLANET</div>
+      <div class="mission-clue">
+        <span class="narrator">URGENT — FROM THE EDITOR:</span>
+        All good things must come to an end, Superman. The weekend is over. Time to hang up the cape and get back to work. Yes, even on a Sunday. Perry White needs you at the office. Sorry, Neil. Fun's over. Head in to work. Don't ask questions. Just go.
+      </div>
+      <div class="mission-reveal" id="reveal-7">
+        <span class="venue-name">🎶 SURPRISE, SUPERMAN!!!</span>
+        JK. You're not going back to work. Your friends are here. The maestro has been summoned. It's a private music improv workshop — birthday edition. SURPRISE, NEIL!<br>
+        <span class="venue-time">⏰ 2:00 PM — THE GRAND FINALE</span>
+        <span class="venue-address">📍 Sunno<br><a href="https://maps.google.com/?q=Sunno" target="_blank">► NAVIGATE ◄</a></span>
+        <div class="neil-player" id="neilPlayer" style="display:none">
+          <span class="neil-player-label">♫ NOW PLAYING: A SONG BY NEIL ♫</span>
+          <audio controls id="neilAudio" src="neil-song.mp3"></audio>
+        </div>
+      </div>
+      <button class="action-btn btn-decode" id="decodeBtn-7">DECODE MISSION</button>
+      <button class="action-btn btn-fly" id="flyBtn-7" style="display:none">COMPLETE QUEST! ★</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VICTORY ===== -->
+<div id="victory">
+  <div class="victory-title">METROPOLIS IS SAVED!</div>
+  <div class="victory-heart">🦸‍♂️❤️</div>
+  <div class="victory-message">
+    ALL MISSIONS COMPLETE.<br><br>
+    HAPPY BIRTHDAY, <em>NEIL</em>.<br><br>
+    <strong>IT'S CRIMINAL HOW MUCH I LOVE YOU.</strong><br><br>
+    YOU ARE LOVED MORE THAN ALL THE<br>
+    PIXELS IN ALL THE GAMES EVER MADE.<br><br>
+    MORE THAN ALL THE STARS OVER METROPOLIS.<br>
+    MORE THAN ALL OF SUPERMAN'S POWERS<br>
+    COMBINED.<br><br>
+    THANK YOU FOR BEING MY SUPERHERO.<br><br>
+    ♥ ♥ ♥
+  </div>
+  <div class="victory-score" id="victoryScore">FINAL SCORE: 0</div>
+</div>
+
+<button class="reset-btn" id="resetBtn" style="display:none">↺ RESET</button>
+
+<!-- Music HUD -->
+<div class="music-hud" id="musicHud" style="display:none">
+  <button class="music-toggle-btn" id="musicToggle">⏸</button>
+  <div class="eq-bars" id="eqBars">
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+    <div class="eq-bar"></div>
+  </div>
+  <span class="music-hud-title" id="musicTitle">♫ LOADING...</span>
+</div>
+
+<script>
+  // ===== AUTO-RESET =====
+  if (window.location.search.includes('reset') || window.location.hash.includes('reset')) {
+    localStorage.removeItem('superman-quest-state');
+    window.location.hash = '';
+    try { window.history.replaceState({}, '', window.location.pathname); } catch(e) {}
+  }
+
+  // ===== AUDIO ENGINE =====
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  let soundEnabled = true;
+  let musicPlaying = false;
+  let musicNodes = [];
+  let currentSong = -1;
+
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  function playTone(freq, dur, type = 'square', vol = 0.1) {
+    if (!soundEnabled) return;
+    try {
+      ensureAudio();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      g.gain.setValueAtTime(vol, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + dur);
+    } catch(e) {}
+  }
+
+  function sfxCoin() { playTone(988, 0.1); setTimeout(() => playTone(1319, 0.3), 100); }
+  function sfxReveal() { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 80); setTimeout(() => playTone(784, 0.15), 160); }
+  function sfxComplete() { playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100); setTimeout(() => playTone(784, 0.1), 200); setTimeout(() => playTone(1047, 0.3), 300); }
+
+  function sfxVictory() {
+    // Superman theme-ish fanfare
+    const notes = [392,392,392,523,392,523,392,659,587,587,587,659,587,523,440];
+    notes.forEach((n, i) => setTimeout(() => playTone(n, 0.25, 'square', 0.08), i * 180));
+  }
+
+  // ===== CHIPTUNE SONGS =====
+  // Each mission has a unique 8-bit soundtrack
+  const SONGS = [
+    { name: 'DAWN PATROL', bpm: 100, wave: 'triangle',
+      melody: [330,330,392,440,392,330,294,262,330,330,392,440,523,494,440,392],
+      bass:   [165,165,196,196,165,165,131,131,165,165,196,196,262,262,220,196] },
+    { name: 'CRYSTAL VISIONS', bpm: 120, wave: 'triangle',
+      melody: [440,523,659,784,659,523,440,392,440,523,659,880,784,659,523,440],
+      bass:   [220,220,262,262,330,330,220,196,220,220,262,262,392,392,330,220] },
+    { name: 'PHANTOM ZONE', bpm: 85, wave: 'sawtooth',
+      melody: [220,247,262,294,262,247,220,208,196,208,220,262,294,262,247,220],
+      bass:   [110,110,131,131,110,110,98,98,110,110,131,131,147,147,131,110] },
+    { name: 'KRYPTONIAN FEAST', bpm: 145, wave: 'square',
+      melody: [392,494,523,587,659,587,523,494,392,440,523,587,659,784,659,587],
+      bass:   [196,196,262,262,330,330,262,262,196,220,262,262,330,392,330,262] },
+    { name: 'SONIC ASSAULT', bpm: 150, wave: 'sawtooth',
+      melody: [330,440,523,660,880,660,523,440,330,415,523,659,880,1047,880,659],
+      bass:   [165,165,220,220,330,330,262,220,165,208,262,330,440,523,440,330] },
+    { name: 'FORTRESS LULLABY', bpm: 72, wave: 'triangle',
+      melody: [523,494,440,392,349,392,440,494,523,587,523,440,392,440,494,523],
+      bass:   [262,247,220,196,175,196,220,247,262,294,262,220,196,220,247,262] },
+    { name: 'TREASURE HUNTER', bpm: 138, wave: 'square',
+      melody: [349,440,523,587,523,440,349,294,349,440,523,659,587,523,440,349],
+      bass:   [175,175,220,262,262,220,175,147,175,175,220,330,294,262,220,175] },
+    { name: 'DAILY PLANET BLUES', bpm: 95, wave: 'triangle',
+      melody: [262,294,330,262,330,349,330,294,262,294,330,392,440,392,349,330],
+      bass:   [131,131,165,131,165,175,165,147,131,131,165,196,220,196,175,165] }
+  ];
+
+  function stopMusic() {
+    musicNodes.forEach(n => { try { n.stop(); } catch(e) {} try { n.disconnect(); } catch(e) {} });
+    musicNodes = [];
+    musicPlaying = false;
+    document.getElementById('eqBars').classList.add('paused');
+    document.getElementById('musicToggle').textContent = '▶';
+  }
+
+  function playSong(idx) {
+    if (!soundEnabled) { showMusicHud(idx); return; }
+    stopMusic();
+    ensureAudio();
+    if (idx < 0 || idx >= SONGS.length) return;
+    currentSong = idx;
+    const s = SONGS[idx];
+    const bd = 60 / s.bpm;
+    const loopLen = s.melody.length * bd;
+
+    const master = audioCtx.createGain();
+    master.gain.setValueAtTime(0.055, audioCtx.currentTime);
+    master.connect(audioCtx.destination);
+
+    function scheduleLoop(t) {
+      if (!musicPlaying) return;
+      s.melody.forEach((f, i) => {
+        const o = audioCtx.createOscillator();
+        const e = audioCtx.createGain();
+        o.type = s.wave; o.frequency.setValueAtTime(f, t + i * bd);
+        e.gain.setValueAtTime(0.6, t + i * bd);
+        e.gain.exponentialRampToValueAtTime(0.01, t + (i + 0.85) * bd);
+        o.connect(e); e.connect(master); o.start(t + i * bd); o.stop(t + (i + 0.9) * bd);
+        musicNodes.push(o);
+      });
+      s.bass.forEach((f, i) => {
+        const o = audioCtx.createOscillator();
+        const e = audioCtx.createGain();
+        o.type = 'triangle'; o.frequency.setValueAtTime(f, t + i * bd);
+        e.gain.setValueAtTime(0.5, t + i * bd);
+        e.gain.exponentialRampToValueAtTime(0.01, t + (i + 0.75) * bd);
+        o.connect(e); e.connect(master); o.start(t + i * bd); o.stop(t + (i + 0.8) * bd);
+        musicNodes.push(o);
+      });
+      // Percussion
+      for (let i = 0; i < s.melody.length; i++) {
+        if (i % 2 === 0) {
+          const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.04, audioCtx.sampleRate);
+          const d = buf.getChannelData(0);
+          for (let x = 0; x < d.length; x++) d[x] = Math.random() * 2 - 1;
+          const n = audioCtx.createBufferSource(); n.buffer = buf;
+          const ne = audioCtx.createGain();
+          ne.gain.setValueAtTime(i % 4 === 0 ? 0.2 : 0.1, t + i * bd);
+          ne.gain.exponentialRampToValueAtTime(0.001, t + i * bd + 0.04);
+          const hf = audioCtx.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.setValueAtTime(7000, 0);
+          n.connect(hf); hf.connect(ne); ne.connect(master);
+          n.start(t + i * bd); n.stop(t + i * bd + 0.05);
+          musicNodes.push(n);
+        }
+      }
+      setTimeout(() => { if (musicPlaying) scheduleLoop(t + loopLen); }, (loopLen - 0.3) * 1000);
+    }
+
+    musicPlaying = true;
+    scheduleLoop(audioCtx.currentTime + 0.05);
+    showMusicHud(idx);
+  }
+
+  function showMusicHud(idx) {
+    const hud = document.getElementById('musicHud');
+    const title = document.getElementById('musicTitle');
+    hud.style.display = 'flex';
+    title.textContent = '♫ ' + SONGS[idx].name;
+    document.getElementById('eqBars').classList.remove('paused');
+    document.getElementById('musicToggle').textContent = '⏸';
+  }
+
+  function toggleMusic() {
+    if (musicPlaying) stopMusic();
+    else if (currentSong >= 0) playSong(currentSong);
+  }
+
+  // ===== CITY SKYLINE =====
+  function buildCity() {
+    const container = document.getElementById('cityBg');
+    const buildings = [
+      { l: '2%', w: 40, h: 120 }, { l: '10%', w: 30, h: 180 }, { l: '16%', w: 50, h: 90 },
+      { l: '24%', w: 35, h: 200 }, { l: '30%', w: 45, h: 140 }, { l: '38%', w: 28, h: 160 },
+      { l: '44%', w: 55, h: 110 }, { l: '52%', w: 32, h: 220 }, { l: '58%', w: 48, h: 130 },
+      { l: '66%', w: 38, h: 170 }, { l: '72%', w: 42, h: 95 }, { l: '78%', w: 30, h: 190 },
+      { l: '85%', w: 50, h: 150 }, { l: '92%', w: 35, h: 125 }
+    ];
+    buildings.forEach(b => {
+      const el = document.createElement('div');
+      el.className = 'building';
+      el.style.left = b.l;
+      el.style.width = b.w + 'px';
+      el.style.height = b.h + 'px';
+      // Windows
+      for (let y = 10; y < b.h - 10; y += 14) {
+        for (let x = 6; x < b.w - 6; x += 10) {
+          if (Math.random() > 0.4) {
+            const w = document.createElement('div');
+            w.className = 'window';
+            w.style.left = x + 'px';
+            w.style.top = y + 'px';
+            w.style.opacity = (0.2 + Math.random() * 0.6).toFixed(2);
+            w.style.animationDelay = (Math.random() * 5) + 's';
+            el.appendChild(w);
+          }
+        }
+      }
+      container.appendChild(el);
+    });
+  }
+
+  function createStars() {
+    const sky = document.getElementById('sky');
+    for (let i = 0; i < 100; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 60 + '%';
+      s.style.animationDelay = Math.random() * 3 + 's';
+      s.style.animationDuration = (1 + Math.random() * 2) + 's';
+      sky.appendChild(s);
+    }
+  }
+
+  // ===== CONFETTI =====
+  function launchConfetti() {
+    const colors = ['#FFD700','#ED1D24','#0033A0','#fffffe','#FF6B6B','#4ECDC4'];
+    for (let i = 0; i < 80; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.width = (4 + Math.random() * 6) + 'px';
+        c.style.height = (4 + Math.random() * 6) + 'px';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (2 + Math.random() * 3) + 's';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+      }, i * 40);
+    }
+  }
+
+  // ===== POW TRANSITION =====
+  const POW_WORDS = ['POW!', 'WHAM!', 'ZOOM!', 'KAPOW!', 'WHOOSH!', 'BAM!', 'ZAP!', 'BOOM!'];
+
+  function showPow(callback) {
+    const overlay = document.getElementById('pow-overlay');
+    const text = document.getElementById('powText');
+    text.textContent = POW_WORDS[Math.floor(Math.random() * POW_WORDS.length)];
+    overlay.classList.remove('active');
+    void overlay.offsetWidth; // reflow
+    overlay.classList.add('active');
+    setTimeout(() => {
+      overlay.classList.remove('active');
+      if (callback) callback();
+    }, 800);
+  }
+
+  // ===== SUPERMAN POSITION =====
+  function moveSuperman() {
+    const s = document.getElementById('superman');
+    s.style.left = (10 + Math.random() * 30) + '%';
+    s.style.top = (20 + Math.random() * 40) + '%';
+    s.classList.remove('flying');
+    void s.offsetWidth;
+    s.classList.add('flying');
+    setTimeout(() => s.classList.remove('flying'), 2000);
+  }
+
+  // ===== GAME STATE =====
+  const TOTAL = 8;
+  let state = loadState();
+
+  function defaultState() { return { current: 0, revealed: [], completed: [], score: 0 }; }
+
+  function loadState() {
+    try {
+      const s = JSON.parse(localStorage.getItem('superman-quest-state'));
+      return s && typeof s.current === 'number' ? s : defaultState();
+    } catch(e) { return defaultState(); }
+  }
+
+  function saveState() { localStorage.setItem('superman-quest-state', JSON.stringify(state)); }
+
+  // ===== RENDER =====
+  function render() {
+    // HUD
+    document.getElementById('hudMission').textContent = 'MISSION ' + Math.min(state.current + 1, TOTAL) + '/' + TOTAL;
+    document.getElementById('hudScore').textContent = state.score + ' PTS';
+    document.getElementById('powerBar').style.width = (state.completed.length / TOTAL * 100) + '%';
+
+    // Hide all panels, show only current
+    for (let i = 0; i < TOTAL; i++) {
+      const panel = document.getElementById('panel-' + i);
+      const reveal = document.getElementById('reveal-' + i);
+      const decodeBtn = document.getElementById('decodeBtn-' + i);
+      const flyBtn = document.getElementById('flyBtn-' + i);
+
+      if (i === state.current) {
+        panel.classList.add('active');
+        if (state.revealed.includes(i)) {
+          reveal.classList.add('visible');
+          decodeBtn.style.display = 'none';
+          flyBtn.style.display = 'inline-block';
+          // Boss level song player
+          if (i === 7) {
+            const np = document.getElementById('neilPlayer');
+            const na = document.getElementById('neilAudio');
+            na.addEventListener('canplaythrough', () => { np.style.display = 'block'; }, { once: true });
+            na.load();
+          }
+        } else {
+          reveal.classList.remove('visible');
+          decodeBtn.style.display = 'inline-block';
+          flyBtn.style.display = 'none';
+        }
+      } else {
+        panel.classList.remove('active');
+      }
+    }
+
+    // Victory
+    if (state.completed.length === TOTAL) {
+      document.getElementById('victoryScore').textContent = 'FINAL SCORE: ' + state.score;
+      document.getElementById('victory').classList.add('active');
+      launchConfetti();
+      sfxVictory();
+    }
+  }
+
+  // ===== ACTIONS =====
+  function decode(i) {
+    if (i !== state.current || state.revealed.includes(i)) return;
+    state.revealed.push(i);
+    state.score += 50;
+    saveState();
+    sfxReveal();
+    render();
+  }
+
+  function flyNext(i) {
+    if (state.completed.includes(i)) return;
+    state.completed.push(i);
+    state.score += 100;
+    state.current = i + 1;
+    saveState();
+    sfxComplete();
+    stopMusic();
+
+    // Show POW, then fly Superman, then show next panel with new music
+    moveSuperman();
+    showPow(() => {
+      if (state.current < TOTAL) {
+        playSong(state.current);
+      }
+      render();
+    });
+  }
+
+  // Wire up buttons
+  for (let i = 0; i < TOTAL; i++) {
+    document.getElementById('decodeBtn-' + i).addEventListener('click', () => decode(i));
+    document.getElementById('flyBtn-' + i).addEventListener('click', () => flyNext(i));
+  }
+
+  // ===== INIT =====
+  buildCity();
+  createStars();
+
+  // Sound toggle
+  document.getElementById('soundToggle').addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+    if (!soundEnabled) stopMusic();
+    else if (currentSong >= 0) playSong(currentSong);
+  });
+
+  // Music toggle
+  document.getElementById('musicToggle').addEventListener('click', toggleMusic);
+
+  // Title screen
+  const titleScreen = document.getElementById('title-screen');
+  const gameEl = document.getElementById('game');
+  const resetEl = document.getElementById('resetBtn');
+
+  if (state.completed.length > 0 || state.revealed.length > 0) {
+    titleScreen.style.display = 'none';
+    gameEl.classList.add('active');
+    resetEl.style.display = 'block';
+    // Resume music for current level
+    playSong(Math.min(state.current, TOTAL - 1));
+    render();
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    sfxCoin();
+    ensureAudio();
+    titleScreen.classList.add('hidden');
+    setTimeout(() => {
+      titleScreen.style.display = 'none';
+      gameEl.classList.add('active');
+      resetEl.style.display = 'block';
+      // Start music immediately!
+      playSong(0);
+      render();
+    }, 1000);
+  });
+
+  // Reset
+  resetEl.addEventListener('click', () => {
+    if (confirm('Reset the entire quest?')) {
+      state = defaultState();
+      saveState();
+      stopMusic();
+      document.getElementById('musicHud').style.display = 'none';
+      document.getElementById('victory').classList.remove('active');
+      render();
+    }
+  });
+
+  window.addEventListener('beforeunload', saveState);
+</script>
+</body>
+</html>

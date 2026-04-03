@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>NEIL'S BIRTHDAY QUEST</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0e17;
+    --primary: #ff8906;
+    --secondary: #f25f4c;
+    --accent: #e53170;
+    --text: #fffffe;
+    --muted: #a7a9be;
+    --green: #2cb67d;
+    --blue: #7f5af0;
+    --cyan: #72f1b8;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Press Start 2P', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    image-rendering: pixelated;
+  }
+
+  /* Scanline overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .stars {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--text);
+    animation: twinkle 2s infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
+
+  /* ===== TITLE SCREEN ===== */
+  #title-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    transition: opacity 0.8s;
+  }
+
+  #title-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .title-text {
+    font-size: clamp(16px, 5vw, 32px);
+    color: var(--primary);
+    text-shadow: 3px 3px 0 var(--secondary), 6px 6px 0 rgba(0,0,0,0.3);
+    text-align: center;
+    margin-bottom: 12px;
+    animation: titlePulse 1.5s ease-in-out infinite;
+    line-height: 1.6;
+  }
+
+  .title-subtitle {
+    font-size: clamp(7px, 2.2vw, 12px);
+    color: var(--cyan);
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 2.2;
+  }
+
+  .title-criminal {
+    font-size: clamp(6px, 1.8vw, 9px);
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 30px;
+    line-height: 2.4;
+    max-width: 320px;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  .coin-prompt {
+    font-size: clamp(8px, 2.5vw, 12px);
+    color: var(--primary);
+    animation: blink 1s step-start infinite;
+    cursor: pointer;
+    padding: 16px 24px;
+    border: 3px solid var(--primary);
+    margin-top: 20px;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* pixel heart */
+  .pixel-heart {
+    width: 80px;
+    height: 70px;
+    margin: 16px auto;
+    position: relative;
+  }
+
+  .pixel-heart::before,
+  .pixel-heart::after {
+    content: '';
+    position: absolute;
+    background: var(--secondary);
+    box-shadow:
+      0px 0px 0 4px var(--secondary),
+      4px 0px 0 4px var(--secondary),
+      8px 0px 0 4px var(--secondary),
+      12px 0px 0 4px var(--secondary),
+      20px 0px 0 4px var(--secondary),
+      24px 0px 0 4px var(--secondary),
+      28px 0px 0 4px var(--secondary),
+      32px 0px 0 4px var(--secondary),
+      -4px 4px 0 4px var(--secondary),
+      0px 4px 0 4px var(--secondary),
+      4px 4px 0 4px var(--accent),
+      8px 4px 0 4px var(--secondary),
+      12px 4px 0 4px var(--secondary),
+      16px 4px 0 4px var(--secondary),
+      20px 4px 0 4px var(--secondary),
+      24px 4px 0 4px var(--secondary),
+      28px 4px 0 4px var(--secondary),
+      32px 4px 0 4px var(--secondary),
+      36px 4px 0 4px var(--secondary),
+      -4px 8px 0 4px var(--secondary),
+      0px 8px 0 4px var(--secondary),
+      4px 8px 0 4px var(--secondary),
+      8px 8px 0 4px var(--secondary),
+      12px 8px 0 4px var(--secondary),
+      16px 8px 0 4px var(--secondary),
+      20px 8px 0 4px var(--secondary),
+      24px 8px 0 4px var(--secondary),
+      28px 8px 0 4px var(--secondary),
+      32px 8px 0 4px var(--secondary),
+      36px 8px 0 4px var(--secondary),
+      0px 12px 0 4px var(--secondary),
+      4px 12px 0 4px var(--secondary),
+      8px 12px 0 4px var(--secondary),
+      12px 12px 0 4px var(--secondary),
+      16px 12px 0 4px var(--secondary),
+      20px 12px 0 4px var(--secondary),
+      24px 12px 0 4px var(--secondary),
+      28px 12px 0 4px var(--secondary),
+      32px 12px 0 4px var(--secondary),
+      4px 16px 0 4px var(--secondary),
+      8px 16px 0 4px var(--secondary),
+      12px 16px 0 4px var(--secondary),
+      16px 16px 0 4px var(--secondary),
+      20px 16px 0 4px var(--secondary),
+      24px 16px 0 4px var(--secondary),
+      28px 16px 0 4px var(--secondary),
+      8px 20px 0 4px var(--secondary),
+      12px 20px 0 4px var(--secondary),
+      16px 20px 0 4px var(--secondary),
+      20px 20px 0 4px var(--secondary),
+      24px 20px 0 4px var(--secondary),
+      12px 24px 0 4px var(--secondary),
+      16px 24px 0 4px var(--secondary),
+      20px 24px 0 4px var(--secondary),
+      16px 28px 0 4px var(--secondary);
+  }
+
+  /* ===== MAIN GAME ===== */
+  #game {
+    display: none;
+    position: relative;
+    z-index: 1;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+
+  #game.active { display: block; }
+
+  .hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    margin-bottom: 16px;
+    border-bottom: 3px dashed var(--muted);
+    font-size: 8px;
+  }
+
+  .hud-score { color: var(--primary); }
+  .hud-level { color: var(--cyan); }
+  .hud-lives { color: var(--secondary); }
+
+  .progress-container {
+    width: 100%;
+    height: 16px;
+    background: #1a1a2e;
+    border: 2px solid var(--muted);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    transition: width 0.6s ease;
+    position: relative;
+  }
+
+  .progress-bar::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 8px;
+    background: white;
+    opacity: 0.5;
+    animation: progressShine 0.8s ease-in-out infinite;
+  }
+
+  @keyframes progressShine {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.8; }
+  }
+
+  /* Quest cards */
+  .quest-card {
+    background: #1a1a2e;
+    border: 3px solid var(--muted);
+    padding: 16px;
+    margin-bottom: 16px;
+    position: relative;
+    transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  .quest-card.active {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(255, 137, 6, 0.3), inset 0 0 20px rgba(255, 137, 6, 0.05);
+  }
+
+  .quest-card.completed {
+    border-color: var(--green);
+    opacity: 0.7;
+  }
+
+  .quest-card.locked {
+    border-color: #2a2a3e;
+    opacity: 0.4;
+  }
+
+  .quest-card.locked .quest-clue,
+  .quest-card.locked .quest-details { display: none; }
+
+  .quest-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .quest-icon {
+    font-size: 24px;
+    min-width: 40px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .quest-level { font-size: 8px; color: var(--muted); }
+
+  .quest-title {
+    font-size: 10px;
+    color: var(--primary);
+    line-height: 1.6;
+  }
+
+  .quest-card.locked .quest-title { color: var(--muted); }
+  .quest-card.completed .quest-title { color: var(--green); }
+
+  .quest-clue {
+    background: rgba(127, 90, 240, 0.15);
+    border: 2px solid var(--blue);
+    padding: 12px;
+    margin: 12px 0;
+    font-size: 8px;
+    line-height: 2;
+    color: var(--cyan);
+    position: relative;
+  }
+
+  .quest-clue::before {
+    content: '>>> CLUE';
+    display: block;
+    font-size: 7px;
+    color: var(--blue);
+    margin-bottom: 8px;
+  }
+
+  .quest-details {
+    display: none;
+    padding: 12px;
+    background: rgba(44, 182, 125, 0.1);
+    border: 2px solid var(--green);
+    margin-top: 12px;
+    font-size: 7px;
+    line-height: 2.2;
+    color: var(--text);
+  }
+
+  .quest-card.revealed .quest-details {
+    display: block;
+    animation: revealSlide 0.5s ease-out;
+  }
+
+  .quest-card.revealed .quest-clue { display: none; }
+
+  @keyframes revealSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .quest-time {
+    color: var(--primary);
+    margin-top: 8px;
+    display: block;
+  }
+
+  .quest-address {
+    color: var(--muted);
+    margin-top: 4px;
+    display: block;
+    font-size: 6px;
+    line-height: 2;
+  }
+
+  .quest-address a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  .btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    padding: 12px 20px;
+    border: 3px solid;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-top: 12px;
+    position: relative;
+  }
+
+  .btn:active { transform: translate(2px, 2px); }
+
+  .btn-reveal {
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+
+  .btn-reveal:hover {
+    background: var(--primary);
+    color: var(--bg);
+  }
+
+  .btn-complete {
+    color: var(--green);
+    border-color: var(--green);
+  }
+
+  .btn-complete:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .btn-disabled {
+    color: var(--muted);
+    border-color: #2a2a3e;
+    cursor: not-allowed;
+  }
+
+  .connector {
+    width: 3px;
+    height: 30px;
+    background: var(--muted);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .connector.active {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+  }
+
+  .connector.completed { background: var(--green); }
+
+  .connector::before,
+  .connector::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .connector::before { top: -4px; background: inherit; }
+  .connector::after { bottom: -4px; background: inherit; }
+
+  .day-divider {
+    text-align: center;
+    padding: 20px 0;
+    font-size: 10px;
+    color: var(--accent);
+    position: relative;
+  }
+
+  .day-divider::before,
+  .day-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 25%;
+    height: 2px;
+    background: var(--accent);
+  }
+
+  .day-divider::before { left: 5%; }
+  .day-divider::after { right: 5%; }
+
+  /* Celebration screen */
+  #celebration {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 200;
+    background: var(--bg);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+  }
+
+  #celebration.active { display: flex; }
+
+  .celebration-text {
+    font-size: clamp(14px, 4vw, 24px);
+    color: var(--primary);
+    text-shadow: 3px 3px 0 var(--secondary);
+    margin-bottom: 20px;
+    line-height: 2;
+  }
+
+  .celebration-sub {
+    font-size: clamp(7px, 2vw, 10px);
+    color: var(--cyan);
+    line-height: 2.4;
+    max-width: 400px;
+  }
+
+  .confetti {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    z-index: 201;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .sound-toggle {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 50;
+    font-size: 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .sound-toggle:hover { opacity: 1; }
+
+  /* Now playing bar */
+  .now-playing {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(15, 14, 23, 0.95);
+    border-top: 2px solid var(--blue);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 7px;
+    color: var(--muted);
+    backdrop-filter: blur(8px);
+  }
+
+  .now-playing-title {
+    color: var(--cyan);
+    animation: marquee 8s linear infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 200px;
+  }
+
+  .music-bars {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 12px;
+  }
+
+  .music-bar {
+    width: 3px;
+    background: var(--cyan);
+    animation: musicBar 0.6s ease-in-out infinite alternate;
+  }
+
+  .music-bar:nth-child(1) { height: 4px; animation-delay: 0s; }
+  .music-bar:nth-child(2) { height: 8px; animation-delay: 0.15s; }
+  .music-bar:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+  .music-bar:nth-child(4) { height: 10px; animation-delay: 0.1s; }
+
+  .music-bars.paused .music-bar {
+    animation: none;
+    height: 3px;
+  }
+
+  @keyframes musicBar {
+    0% { height: 3px; }
+    100% { height: 12px; }
+  }
+
+  .play-pause-btn {
+    font-size: 14px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 4px;
+  }
+
+  .reset-btn {
+    position: fixed;
+    bottom: 44px;
+    left: 12px;
+    z-index: 999;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 7px;
+    color: var(--secondary);
+    background: rgba(15, 14, 23, 0.9);
+    border: 2px solid var(--secondary);
+    padding: 8px 14px;
+    cursor: pointer;
+    opacity: 0.7;
+  }
+
+  .reset-btn:hover { opacity: 1; background: var(--secondary); color: var(--bg); }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-in { animation: slideUp 0.4s ease-out forwards; }
+
+  .quest-card.locked .quest-icon {
+    animation: lockedShimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes lockedShimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+
+  /* Neil's song audio player */
+  .neil-player {
+    margin-top: 12px;
+    padding: 10px;
+    background: rgba(127, 90, 240, 0.1);
+    border: 2px solid var(--blue);
+  }
+
+  .neil-player audio {
+    width: 100%;
+    height: 32px;
+  }
+
+  .neil-player-label {
+    font-size: 6px;
+    color: var(--blue);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  @media (max-width: 400px) {
+    .quest-card { padding: 12px; }
+    .quest-icon { font-size: 20px; min-width: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<button class="sound-toggle" id="soundToggle" title="Toggle sound">🔊</button>
+
+<!-- ===== TITLE SCREEN ===== -->
+<div id="title-screen">
+  <div class="title-text">
+    NEIL'S<br>BIRTHDAY<br>QUEST
+  </div>
+  <div class="pixel-heart"></div>
+  <div class="title-subtitle">
+    ★ A 24-HOUR ADVENTURE ★<br>
+    PLAYER 2 HAS JOINED THE PARTY
+  </div>
+  <div class="title-criminal">
+    IT'S CRIMINAL HOW MUCH I LOVE YOU, NEIL.<br>
+    THIS IS YOUR ARREST WARRANT.<br>
+    THE CHARGE: BEING TOO LOVEABLE.<br>
+    YOUR SENTENCE: 24 HOURS OF ADVENTURE.
+  </div>
+  <div class="coin-prompt" id="startBtn">
+    ► INSERT COIN TO START ◄
+  </div>
+</div>
+
+<!-- ===== MAIN GAME ===== -->
+<div id="game">
+  <div class="hud">
+    <span class="hud-score">SCORE: <span id="score">0</span></span>
+    <span class="hud-level">LVL <span id="currentLevel">1</span>/8</span>
+    <span class="hud-lives">♥♥♥</span>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+  </div>
+
+  <!-- LEVEL 1: Lattes -->
+  <div class="quest-card active" id="quest-0">
+    <div class="quest-header">
+      <div class="quest-icon">☕</div>
+      <div>
+        <div class="quest-level">LEVEL 1 — SATURDAY</div>
+        <div class="quest-title">THE AWAKENING POTION</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      Every great quest begins with fuel. Seek the sacred elixir — steamed, frothy, and caffeinated. Two potions, please. One for each adventurer.
+    </div>
+    <div class="quest-details">
+      <strong>☕ LATTE TIME, NEIL!</strong><br><br>
+      Grab your morning lattes and fuel up — the adventure ahead is epic. You're gonna need the caffeine.<br>
+      <span class="quest-time">⏰ MORNING — WHENEVER YOU RISE</span>
+    </div>
+    <button class="btn btn-reveal" onclick="revealQuest(0)">🔓 DECODE CLUE</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(0)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-0"></div>
+
+  <!-- LEVEL 2: Mosaic Tile House -->
+  <div class="quest-card locked" id="quest-1">
+    <div class="quest-header">
+      <div class="quest-icon">🎨</div>
+      <div>
+        <div class="quest-level">LEVEL 2 — SATURDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      Seek the enchanted house where every surface — wall, floor, and sky — is covered in a thousand tiny colored squares. An artist's obsession made real in Venice... but not Italy.
+    </div>
+    <div class="quest-details">
+      <strong>🎨 THE MOSAIC TILE HOUSE</strong><br><br>
+      A private home turned total art installation — every inch covered in dazzling mosaic tiles and found objects by artists Cheri Pann and Gonzalo Duran.<br>
+      <span class="quest-time">⏰ 1:30 PM — TOUR TIME</span><br>
+      <span class="quest-address">📍 1116 Palms Blvd, Venice CA<br><a href="https://maps.google.com/?q=1116+Palms+Blvd+Venice+CA" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(1)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-1"></div>
+
+  <!-- LEVEL 3: Museum of Jurassic Technology -->
+  <div class="quest-card locked" id="quest-2">
+    <div class="quest-header">
+      <div class="quest-icon">🦕</div>
+      <div>
+        <div class="quest-level">LEVEL 3 — SATURDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      Enter the hall of wonder where nothing is what it seems. Is the exhibit real or imagined? Bats, dice, and tiny sculptures smaller than a needle's eye await. Some say it's a museum... others say it's a dream you can walk through.
+    </div>
+    <div class="quest-details">
+      <strong>🦕 MUSEUM OF JURASSIC TECHNOLOGY</strong><br><br>
+      LA's most wonderfully strange museum — a cabinet of curiosities where you can never quite tell what's real and what's invented.<br>
+      <span class="quest-time">⏰ 3:15 PM — RESERVATION</span><br>
+      <span class="quest-address">📍 9341 Venice Blvd, Culver City<br><a href="https://maps.google.com/?q=9341+Venice+Blvd+Culver+City+CA" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(2)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-2"></div>
+
+  <!-- LEVEL 4: Hatchet Hall -->
+  <div class="quest-card locked" id="quest-3">
+    <div class="quest-header">
+      <div class="quest-icon">🪓</div>
+      <div>
+        <div class="quest-level">LEVEL 4 — SATURDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      When the hunger meter runs low, seek the hall named for a sharp-edged tool. Southern comfort and whole-animal feasts await... and through a hidden door, an old man pours amber spirits in the shadows.
+    </div>
+    <div class="quest-details">
+      <strong>🪓 HATCHET HALL + THE OLD MAN BAR</strong><br><br>
+      Southern-inspired feast with whole-animal cookery and legendary biscuits. Then slip into The Old Man Bar — a cozy, dimly lit whiskey den tucked in the back.<br>
+      <span class="quest-time">⏰ 5:15 PM — DINNER RESERVATION</span><br>
+      <span class="quest-address">📍 10543 Pico Blvd, Los Angeles<br><a href="https://maps.google.com/?q=10543+Pico+Blvd+Los+Angeles+CA" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(3)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-3"></div>
+
+  <!-- LEVEL 5: Wild Up at Nimoy Theater -->
+  <div class="quest-card locked" id="quest-4">
+    <div class="quest-header">
+      <div class="quest-icon">🎵</div>
+      <div>
+        <div class="quest-level">LEVEL 5 — SATURDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      As darkness falls, seek the theater named for a man who lived long and prospered. Tonight, a band that is neither orchestra nor rock — something WILD and untamed — will fill the hall with sound. You may have seen them play behind a tiny desk...
+    </div>
+    <div class="quest-details">
+      <strong>🎵 WILD UP — LIVE AT THE NIMOY</strong><br><br>
+      Genre-defying experimental ensemble Wild Up (yes, the Tiny Desk legends) perform at UCLA's Nimoy Theater. Presented by CAP UCLA.<br>
+      <span class="quest-time">⏰ 8:00 PM — SHOWTIME</span><br>
+      <span class="quest-address">📍 The Nimoy Theater, UCLA Campus<br><a href="https://maps.google.com/?q=Nimoy+Theater+UCLA" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(4)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-4"></div>
+
+  <!-- LEVEL 6: Pali Hotel -->
+  <div class="quest-card locked" id="quest-5">
+    <div class="quest-header">
+      <div class="quest-icon">🏨</div>
+      <div>
+        <div class="quest-level">LEVEL 6 — SATURDAY NIGHT</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      The final stop of the evening lies on a famous boulevard, just south of tonight's theater. A boutique palace awaits with a nightcap... and perhaps something more. Your reward for a quest well played, Neil.
+    </div>
+    <div class="quest-details">
+      <strong>🏨 THE PALI HOTEL — WESTWOOD</strong><br><br>
+      A chic boutique hotel for your nightcap and some well-earned rest (or whatever the night brings...)<br>
+      <span class="quest-time">⏰ LATE NIGHT — NO RUSH</span><br>
+      <span class="quest-address">📍 10740 Wilshire Blvd, Westwood<br><a href="https://maps.google.com/?q=Pali+Hotel+Westwood" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(5)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="day-divider">☀️ DAY 2 — SUNDAY ☀️</div>
+
+  <!-- LEVEL 7: Flea Market -->
+  <div class="quest-card locked" id="quest-6">
+    <div class="quest-header">
+      <div class="quest-icon">🛍️</div>
+      <div>
+        <div class="quest-level">LEVEL 7 — SUNDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      Where planes once taxied, treasures now await. Sunday morning brings a bazaar of vintage wonders on the tarmac — old records, curious objects, and hidden gems under the open sky.
+    </div>
+    <div class="quest-details">
+      <strong>🛍️ SANTA MONICA AIRPORT FLEA MARKET</strong><br><br>
+      Open-air vintage market on the airport grounds — dig for records, vintage finds, furniture, and collectibles!<br>
+      <span class="quest-time">⏰ SUNDAY MORNING</span><br>
+      <span class="quest-address">📍 Santa Monica Airport, 3223 Donald Douglas Loop S<br><a href="https://maps.google.com/?q=Santa+Monica+Airport+Flea+Market" target="_blank">► OPEN MAP ◄</a></span>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(6)">✓ QUEST COMPLETE</button>
+  </div>
+
+  <div class="connector" id="conn-5"></div>
+
+  <!-- LEVEL 8: BOSS BATTLE — "Back to Work" Fake-Out -->
+  <div class="quest-card locked" id="quest-7">
+    <div class="quest-header">
+      <div class="quest-icon">💼</div>
+      <div>
+        <div class="quest-level">★ BOSS LEVEL ★ — SUNDAY</div>
+        <div class="quest-title">? ? ?</div>
+      </div>
+    </div>
+    <div class="quest-clue">
+      ★ FINAL BOSS ★<br><br>
+      All good things must come to an end, Neil. The weekend is over. Time to get back to work. Sorry. Fun's over. Back to the office. On a Sunday. Yeah, I know. Just trust me on this one. Head to work.
+    </div>
+    <div class="quest-details">
+      <strong>🎶 SURPRISE!!!</strong><br><br>
+      JK. You're not going back to work. Your friends are here. The maestro has been summoned. It's a private music improv workshop — birthday edition. SURPRISE, NEIL.<br>
+      <span class="quest-time">⏰ 2:00 PM — THE GRAND FINALE</span><br>
+      <span class="quest-address">📍 Sunno<br><a href="https://maps.google.com/?q=Sunno" target="_blank">► OPEN MAP ◄</a></span>
+      <!-- Neil's song player - add your file to the birthday-quest folder as neil-song.mp3 -->
+      <div class="neil-player" id="neilPlayer" style="display:none">
+        <span class="neil-player-label">♫ NOW PLAYING: A SONG BY NEIL ♫</span>
+        <audio controls id="neilAudio" src="neil-song.mp3"></audio>
+      </div>
+    </div>
+    <button class="btn btn-disabled">🔒 LOCKED</button>
+    <button class="btn btn-complete" style="display:none" onclick="completeQuest(7)">✓ QUEST COMPLETE</button>
+  </div>
+</div>
+
+<!-- ===== CELEBRATION SCREEN ===== -->
+<div id="celebration">
+  <div class="celebration-text">
+    🏆 QUEST<br>COMPLETE! 🏆
+  </div>
+  <div class="celebration-sub">
+    ALL LEVELS CLEARED!<br><br>
+    HAPPY BIRTHDAY, NEIL.<br><br>
+    IT'S CRIMINAL HOW MUCH<br>
+    I LOVE YOU.<br><br>
+    YOU ARE LOVED MORE THAN<br>
+    ALL THE PIXELS IN ALL<br>
+    THE GAMES EVER MADE.<br><br>
+    ♥ ♥ ♥<br><br>
+    THANK YOU FOR BEING<br>
+    THE BEST ADVENTURE PARTNER.<br><br>
+    <span style="color: var(--primary);">FINAL SCORE: <span id="finalScore">0</span></span>
+  </div>
+</div>
+
+<button class="reset-btn" id="resetBtn" style="display:none">↺ RESTART QUEST</button>
+
+<!-- Now Playing Bar -->
+<div class="now-playing" id="nowPlaying" style="display:none">
+  <button class="play-pause-btn" id="playPauseBtn">⏸</button>
+  <div class="music-bars" id="musicBars">
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+    <div class="music-bar"></div>
+  </div>
+  <div class="now-playing-title" id="nowPlayingTitle">♫ LOADING...</div>
+</div>
+
+<script>
+  // ===== AUTO-RESET VIA URL =====
+  // Open with ?reset or #reset to clear all progress and start fresh
+  if (window.location.search.includes('reset') || window.location.hash.includes('reset')) {
+    localStorage.removeItem('bday-quest-state');
+    window.location.hash = '';
+    try { window.history.replaceState({}, '', window.location.pathname); } catch(e) {}
+  }
+
+  // ===== AUDIO ENGINE =====
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  let soundEnabled = true;
+  let musicPlaying = false;
+  let currentMusicNodes = [];
+  let currentSongIndex = -1;
+
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+
+  function playTone(freq, duration, type = 'square', volume = 0.1) {
+    if (!soundEnabled) return;
+    try {
+      ensureAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function sfxCoin() {
+    playTone(988, 0.1); setTimeout(() => playTone(1319, 0.3), 100);
+  }
+
+  function sfxReveal() {
+    playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 80);
+    setTimeout(() => playTone(784, 0.15), 160);
+  }
+
+  function sfxComplete() {
+    playTone(523, 0.1); setTimeout(() => playTone(659, 0.1), 100);
+    setTimeout(() => playTone(784, 0.1), 200); setTimeout(() => playTone(1047, 0.3), 300);
+  }
+
+  function sfxVictory() {
+    const notes = [523, 523, 523, 698, 880, 784, 698, 880, 1047];
+    notes.forEach((n, i) => setTimeout(() => playTone(n, 0.2, 'square', 0.08), i * 150));
+  }
+
+  // ===== CHIPTUNE MUSIC ENGINE =====
+  // Each level gets a unique procedural chiptune that loops
+  const SONGS = [
+    { name: 'MORNING BREW', bpm: 110, key: 'C', mood: 'chill',
+      melody: [262,294,330,349,330,294,262,247,262,294,330,392,349,330,294,262],
+      bass:   [131,131,165,165,175,175,131,131,131,131,165,165,175,175,131,131],
+      wave: 'square' },
+    { name: 'MOSAIC DREAMS', bpm: 125, key: 'D', mood: 'wonder',
+      melody: [294,370,440,370,294,330,392,330,294,370,440,523,494,440,392,370],
+      bass:   [147,147,185,185,165,165,196,196,147,147,185,185,165,165,196,196],
+      wave: 'triangle' },
+    { name: 'CABINET OF CURIOSITIES', bpm: 90, key: 'Am', mood: 'mysterious',
+      melody: [440,415,392,349,330,349,392,415,440,523,494,440,392,349,330,262],
+      bass:   [110,110,131,131,147,147,131,131,110,110,131,131,147,147,131,131],
+      wave: 'sawtooth' },
+    { name: 'SOUTHERN FEAST', bpm: 140, key: 'G', mood: 'upbeat',
+      melody: [392,440,494,523,494,440,392,349,330,349,392,440,494,523,587,523],
+      bass:   [196,196,220,220,247,247,196,196,196,196,220,220,247,247,196,196],
+      wave: 'square' },
+    { name: 'WILD FREQUENCIES', bpm: 135, key: 'E', mood: 'experimental',
+      melody: [330,415,494,523,659,523,494,415,330,392,494,587,659,587,494,392],
+      bass:   [165,165,208,208,247,247,208,208,165,165,208,208,247,247,208,208],
+      wave: 'sawtooth' },
+    { name: 'MIDNIGHT PALACE', bpm: 80, key: 'Dm', mood: 'romantic',
+      melody: [294,349,440,523,494,440,349,294,262,294,349,440,392,349,330,294],
+      bass:   [147,147,175,175,220,220,175,175,147,147,175,175,220,220,175,175],
+      wave: 'triangle' },
+    { name: 'TREASURE HUNT', bpm: 130, key: 'F', mood: 'adventurous',
+      melody: [349,392,440,523,587,523,440,392,349,440,523,587,659,587,523,440],
+      bass:   [175,175,220,220,262,262,220,220,175,175,220,220,262,262,220,220],
+      wave: 'square' },
+    { name: 'BACK TO WORK (LOL)', bpm: 100, key: 'C', mood: 'sneaky',
+      melody: [262,262,294,330,349,330,294,262,247,262,294,349,392,440,494,523],
+      bass:   [131,131,147,147,175,175,147,147,131,131,147,147,175,175,196,196],
+      wave: 'triangle' }
+  ];
+
+  function stopMusic() {
+    currentMusicNodes.forEach(n => {
+      try { n.stop(); } catch(e) {}
+      try { n.disconnect(); } catch(e) {}
+    });
+    currentMusicNodes = [];
+    musicPlaying = false;
+    const bars = document.getElementById('musicBars');
+    if (bars) bars.classList.add('paused');
+    const btn = document.getElementById('playPauseBtn');
+    if (btn) btn.textContent = '▶';
+  }
+
+  function playSong(index) {
+    if (!soundEnabled) return;
+    stopMusic();
+    ensureAudio();
+
+    if (index < 0 || index >= SONGS.length) return;
+    currentSongIndex = index;
+    const song = SONGS[index];
+    const beatDur = 60 / song.bpm;
+    const loopLen = song.melody.length * beatDur;
+
+    // Master gain
+    const masterGain = audioCtx.createGain();
+    masterGain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    masterGain.connect(audioCtx.destination);
+
+    function scheduleLoop(startTime) {
+      if (!musicPlaying) return;
+
+      // Melody
+      song.melody.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const env = audioCtx.createGain();
+        osc.type = song.wave;
+        osc.frequency.setValueAtTime(freq, startTime + i * beatDur);
+        env.gain.setValueAtTime(0.7, startTime + i * beatDur);
+        env.gain.exponentialRampToValueAtTime(0.01, startTime + (i + 0.9) * beatDur);
+        osc.connect(env);
+        env.connect(masterGain);
+        osc.start(startTime + i * beatDur);
+        osc.stop(startTime + (i + 0.95) * beatDur);
+        currentMusicNodes.push(osc);
+      });
+
+      // Bass
+      song.bass.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const env = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, startTime + i * beatDur);
+        env.gain.setValueAtTime(0.5, startTime + i * beatDur);
+        env.gain.exponentialRampToValueAtTime(0.01, startTime + (i + 0.8) * beatDur);
+        osc.connect(env);
+        env.connect(masterGain);
+        osc.start(startTime + i * beatDur);
+        osc.stop(startTime + (i + 0.85) * beatDur);
+        currentMusicNodes.push(osc);
+      });
+
+      // Hi-hat (every other beat)
+      for (let i = 0; i < song.melody.length; i += 2) {
+        const bufSize = audioCtx.sampleRate * 0.05;
+        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let s = 0; s < bufSize; s++) data[s] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+        const hiEnv = audioCtx.createGain();
+        hiEnv.gain.setValueAtTime(0.15, startTime + i * beatDur);
+        hiEnv.gain.exponentialRampToValueAtTime(0.001, startTime + i * beatDur + 0.05);
+        const hiFilter = audioCtx.createBiquadFilter();
+        hiFilter.type = 'highpass';
+        hiFilter.frequency.setValueAtTime(8000, 0);
+        noise.connect(hiFilter);
+        hiFilter.connect(hiEnv);
+        hiEnv.connect(masterGain);
+        noise.start(startTime + i * beatDur);
+        noise.stop(startTime + i * beatDur + 0.06);
+        currentMusicNodes.push(noise);
+      }
+
+      // Schedule next loop
+      setTimeout(() => {
+        if (musicPlaying) scheduleLoop(startTime + loopLen);
+      }, (loopLen - 0.5) * 1000);
+    }
+
+    musicPlaying = true;
+    scheduleLoop(audioCtx.currentTime + 0.1);
+
+    // Update UI
+    const npBar = document.getElementById('nowPlaying');
+    const npTitle = document.getElementById('nowPlayingTitle');
+    const bars = document.getElementById('musicBars');
+    const btn = document.getElementById('playPauseBtn');
+    npBar.style.display = 'flex';
+    npTitle.textContent = '♫ ' + song.name;
+    bars.classList.remove('paused');
+    btn.textContent = '⏸';
+  }
+
+  function toggleMusic() {
+    if (musicPlaying) {
+      stopMusic();
+    } else if (currentSongIndex >= 0) {
+      playSong(currentSongIndex);
+    }
+  }
+
+  // ===== GAME STATE =====
+  const TOTAL_QUESTS = 8;
+  const QUEST_TITLES = [
+    'THE AWAKENING POTION',
+    'THE MOSAIC TEMPLE',
+    'HALL OF WONDER',
+    'THE HATCHET FEAST',
+    'THE WILD SOUND',
+    'THE PALACE REST',
+    'TREASURE TARMAC',
+    '★ BACK TO WORK ★'
+  ];
+
+  let state = loadState();
+
+  function defaultState() {
+    return { currentQuest: 0, revealed: [], completed: [], score: 0 };
+  }
+
+  function loadState() {
+    try {
+      const s = JSON.parse(localStorage.getItem('bday-quest-state'));
+      return s && typeof s.currentQuest === 'number' ? s : defaultState();
+    } catch(e) { return defaultState(); }
+  }
+
+  function saveState() {
+    localStorage.setItem('bday-quest-state', JSON.stringify(state));
+  }
+
+  // ===== STARS =====
+  function createStars() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 100 + '%';
+      star.style.animationDelay = Math.random() * 2 + 's';
+      star.style.animationDuration = (1 + Math.random() * 2) + 's';
+      container.appendChild(star);
+    }
+  }
+
+  // ===== CONFETTI =====
+  function launchConfetti() {
+    const colors = ['#ff8906','#f25f4c','#e53170','#2cb67d','#7f5af0','#72f1b8','#fffffe'];
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        const c = document.createElement('div');
+        c.className = 'confetti';
+        c.style.left = Math.random() * 100 + 'vw';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.animationDuration = (2 + Math.random() * 3) + 's';
+        c.style.animationDelay = '0s';
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+      }, i * 50);
+    }
+  }
+
+  // ===== RENDER =====
+  function render() {
+    document.getElementById('score').textContent = state.score;
+    document.getElementById('currentLevel').textContent = Math.min(state.currentQuest + 1, TOTAL_QUESTS);
+
+    const pct = (state.completed.length / TOTAL_QUESTS) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+
+    for (let i = 0; i < TOTAL_QUESTS; i++) {
+      const card = document.getElementById('quest-' + i);
+      const btns = card.querySelectorAll('.btn');
+      const revealBtn = btns[0];
+      const completeBtn = btns[1];
+
+      card.classList.remove('active', 'locked', 'completed', 'revealed');
+
+      if (state.completed.includes(i)) {
+        card.classList.add('completed', 'revealed');
+        revealBtn.style.display = 'none';
+        completeBtn.style.display = 'none';
+        card.querySelector('.quest-title').textContent = QUEST_TITLES[i];
+      } else if (i === state.currentQuest) {
+        card.classList.add('active');
+        if (state.revealed.includes(i)) {
+          card.classList.add('revealed');
+          card.querySelector('.quest-title').textContent = QUEST_TITLES[i];
+          revealBtn.style.display = 'none';
+          completeBtn.style.display = 'inline-block';
+          // Show Neil's song player on boss level reveal
+          if (i === 7) {
+            const neilPlayer = document.getElementById('neilPlayer');
+            // Check if the audio file exists
+            const neilAudio = document.getElementById('neilAudio');
+            neilAudio.addEventListener('canplaythrough', () => {
+              neilPlayer.style.display = 'block';
+            }, { once: true });
+            neilAudio.load();
+          }
+        } else {
+          revealBtn.style.display = 'inline-block';
+          revealBtn.className = 'btn btn-reveal';
+          revealBtn.textContent = '🔓 DECODE CLUE';
+          revealBtn.onclick = () => revealQuest(i);
+          completeBtn.style.display = 'none';
+        }
+      } else {
+        card.classList.add('locked');
+        card.querySelector('.quest-title').textContent = '? ? ?';
+        revealBtn.style.display = 'inline-block';
+        revealBtn.className = 'btn btn-disabled';
+        revealBtn.textContent = '🔒 LOCKED';
+        revealBtn.onclick = null;
+        completeBtn.style.display = 'none';
+      }
+
+      const conn = document.getElementById('conn-' + i);
+      if (conn) {
+        conn.classList.remove('active', 'completed');
+        if (state.completed.includes(i)) conn.classList.add('completed');
+        else if (i === state.currentQuest) conn.classList.add('active');
+      }
+    }
+
+    // Victory
+    if (state.completed.length === TOTAL_QUESTS) {
+      document.getElementById('finalScore').textContent = state.score;
+      document.getElementById('celebration').classList.add('active');
+      launchConfetti();
+      sfxVictory();
+    }
+  }
+
+  // ===== ACTIONS =====
+  function revealQuest(i) {
+    if (i !== state.currentQuest) return;
+    if (state.revealed.includes(i)) return;
+    state.revealed.push(i);
+    state.score += 50;
+    saveState();
+    sfxReveal();
+
+    // Start the level's music
+    playSong(i);
+
+    render();
+
+    const card = document.getElementById('quest-' + i);
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function completeQuest(i) {
+    if (state.completed.includes(i)) return;
+    state.completed.push(i);
+    state.score += 100;
+    state.currentQuest = i + 1;
+    saveState();
+    sfxComplete();
+    stopMusic();
+    render();
+
+    if (state.currentQuest < TOTAL_QUESTS) {
+      setTimeout(() => {
+        const next = document.getElementById('quest-' + state.currentQuest);
+        next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 400);
+    }
+  }
+
+  // ===== INIT =====
+  createStars();
+
+  // Sound toggle
+  document.getElementById('soundToggle').addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundToggle').textContent = soundEnabled ? '🔊' : '🔇';
+    if (!soundEnabled) stopMusic();
+  });
+
+  // Play/pause music
+  document.getElementById('playPauseBtn').addEventListener('click', toggleMusic);
+
+  // Title screen
+  const titleScreen = document.getElementById('title-screen');
+  const game = document.getElementById('game');
+  const resetBtn = document.getElementById('resetBtn');
+
+  if (state.completed.length > 0 || state.revealed.length > 0) {
+    titleScreen.style.display = 'none';
+    game.classList.add('active');
+    resetBtn.style.display = 'block';
+    render();
+  }
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    sfxCoin();
+    titleScreen.classList.add('hidden');
+    setTimeout(() => {
+      titleScreen.style.display = 'none';
+      game.classList.add('active');
+      resetBtn.style.display = 'block';
+      render();
+    }, 800);
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    if (confirm('Reset the entire quest? All progress will be lost!')) {
+      state = defaultState();
+      saveState();
+      stopMusic();
+      document.getElementById('nowPlaying').style.display = 'none';
+      document.getElementById('celebration').classList.remove('active');
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
+  window.addEventListener('beforeunload', saveState);
+</script>
+</body>
+</html>
